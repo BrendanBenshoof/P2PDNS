@@ -60,7 +60,14 @@ Recent events have yielded new understanding that the mutually trusted third par
 \section{Distribution of DNS}
 Responsibility for serving DNS records is distributed across the network
 Each node of the network acts as a DNS server reverse compatible with the DNS RFC
-
+\begin{itemize}
+\item{Responsibility for serving DNS records is distributed across the network}
+\item{Each node of the network acts as a DNS server reverse compatible with the DNS RFC}
+\item{Any end user who wishes to use this DNS network sets any node as thier DNS server (and ideally this node is nearby to the client)}
+\item{Each node keeps a local hosts file that chaches the results of recent and frequent results}
+\item{If a node does not have the DNS record for a request locally or chached. If the request is marked recursive it sends a request for the node across the network. If the request is not marked recursive, a pointer to the closest known peer is given.}
+\item{Optionally, if a DNS request is for a domain the P2P DNS is not configured to manage, the request is forwarded to a conventional DNS server}
+\end{itemize}
 
 
 
