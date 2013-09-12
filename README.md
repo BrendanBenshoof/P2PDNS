@@ -35,7 +35,7 @@ records and certification keys.
 - Each peer is responsible for a verifiable span of hash values
 - Facilitates one-to-one communcation and one-to-many communcation
 
-## Namecoin Varient
+## Namecoin Variant
 
 - Allows for a shared, immutible and secure public records
 - Based on the block chain verification of bitcoin
@@ -64,3 +64,7 @@ a record is required
 ## Distribution of DNS
 - Responsibility for serving DNS records is distributed across the network
 - Each node of the network acts as a DNS server reverse compatible with the DNS RFC
+- Any end user who wishes to use this DNS network sets any node as thier DNS server (and ideally this node is nearby to the client)
+- Each node keeps a local hosts file that chaches the results of recent and frequent results
+- If a node does not have the DNS record for a request locally or chached. If the request is marked recursive it sends a request for the node across the network. If the request is not marked recursive, a pointer to the closest known peer is given.
+- Optionally, if a DNS request is for a domain the P2P DNS is not configured to manage, the request is forwarded to a conventional DNS server
