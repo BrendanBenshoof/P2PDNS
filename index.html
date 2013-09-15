@@ -72,6 +72,7 @@ Recent
 - Use a variant of NameCoin's blockchain to secure shared list of keys and domains.
 - Use the DHT to load balance and distribute responsibility for hosting DNS
 and keys.
+
 ...
 
 ## Distributed Hash Table
@@ -86,24 +87,28 @@ and keys.
 - Based on the block chain verification of Bitcoin
 - One block can include the validation of a new server's public key
 - One block can include a DNS record or change
-- Blocks require a proof of work to authenticate, causing records to be
-produced at a semi-fixed rate.
+- Blocks require a proof of work to authenticate, causing records to be produced at a semi-fixed rate.
 
 ...
 
-## Man in the Middle Prevention
+## Man in the Middle In a DHT
+- Need to have a distributed, reliable way to authenticate 
 - Given: an existing network where nodes have exchanged keys securely
 - Given: a new peer who wishes to join the network and share their public key
-    - At least 2 members of the network interrogate the new peer for its public key
-    - Those interrogators the new peer compare their results
-    - If those results match
-        - The new peer creates an authentication record
-        - The interrogators sign that record
-        - The new record is distributed across the network
-    - If the results do not match
-        - An attack is detected and reported to the new peer by all authenticating servers.
-        - A member of the network may make a ban of the compromised peer
-        - Otherwise the joining process can be repeated.
+
+..
+
+## Man in the Middle Prevention
+- At least 2 members of the network interrogate the new peer for its public key
+- Those interrogators compare their results
+- If those results match
+    - The new peer creates an authentication record
+    - The interrogators sign that record
+    - The new record is distributed across the network
+- If the results do not match
+    - An attack is detected and reported to the new peer by all authenticating servers.
+    - A member of the network may make a ban of the compromised peer
+    - Otherwise the joining process can be repeated.
 
 ...
 
@@ -111,9 +116,13 @@ produced at a semi-fixed rate.
 - Responsibility for serving DNS records is distributed across the network.
 - Each node acts as a DNS server reverse compatible with traditional DNS
 - Any user who wishes to use this DNS network sets any node as their DNS server (and ideally this node is nearby to the client)
-- Each node keeps a local hosts file that caches the results of recent and frequent results
-- If a node does not have the DNS record for a request locally or stored in the cache, it may either internally seek the value or return its 
-best peer for that record, depending on the recursive bit of the DNS request.
+
+## Retrieval
+- Each node keeps a caches of recent and frequent results
+- If a node does not have the DNS record for a request locally or stored in the cache, it may either:
+    - Retreive the value for the requester, getting its own copy
+	- Return its best peer for that record
+- Choice depends on the recursive bit of the DNS request.
 - Optionally, if a DNS request is for a domain the P2P DNS is not configured to manage, the request is forwarded to a conventional DNS server
 
 </script>
