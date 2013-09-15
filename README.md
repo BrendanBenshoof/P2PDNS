@@ -44,12 +44,12 @@ records and certification keys.
 - One block can include a DNS record or change
 - Blocks require a proof of work to authenticate, causing records to be
 produced at a semi-fixed rate
-- Unlike Bitcoin, 1 block per transaction, thus mining only happens when
-a record is required
+- Unlike Bitcoin there is one transaction per block. Thus mining only happens when
+a new record is required
 
 ## Man in the Middle Prevention
 
-- Given: an existing network where nodes have exchange  keys securely
+- Given: an existing network where nodes have exchanged keys securely
 - Given: a new peer who wishes to join the network and share their public key
     - At least 2 members of the network interrogate the new peer for its public key
     - Those peers that interrogated the new peer compare their results
