@@ -57,7 +57,6 @@ a means of creating a distributed signing authority for SSL certificates.
 ...
 
 ## Why?
-Recent 
 
 - Recent events have demonstrated that centralized authorities are not as secure a previously hoped.
 	- There is little cryptographic protection against the subpoena.
@@ -117,7 +116,8 @@ and keys.
 - Each node acts as a DNS server reverse compatible with traditional DNS
 - Any user who wishes to use this DNS network sets any node as their DNS server 
 	- ideally this node is nearby to the client
-- Send DNS requests to that node. 
+- Send DNS requests to that node.
+- Transparent to end user. 
 
 ..
 
@@ -129,7 +129,40 @@ and keys.
     - Retrieve the value for the requester, getting its own copy
 	- Return its best peer for that record
 - Choice depends on the recursive bit of the DNS request.
-- Optionally, if a DNS request is for a domain the P2P DNS is not configured to manage, the request is forwarded to a conventional DNS server
+- Optionally, if a DNS request is for a domain the P2P DNS is not configured to manage, ask conventional DNS server
+
+...
+
+## Project Components
+- Research related work
+- Formalize protocol and architecture
+- Implement protocol with real servers
+
+..
+
+## Research
+- Review existing previous work to build off.
+	- Distributed DNS
+	- Implementations of Chord
+	- Examinations of the Bitcoin blockchain
+- Identify related work
+
+..
+
+## Formalization
+- Need to design an architecture and protocol before programming can begin.
+- Identify security holes and address them
+
+..
+
+## Final Product
+- First draft of conference paper.
+- Implementation of protocol on top of Chord
+- Experimental results
+	- Nodes outside network can perform lookup on the distributed DNS.
+	- Latency data.
+	- Scalability data.
+
 
 </script>
                 </section>
