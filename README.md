@@ -24,7 +24,7 @@ by any government or corporation.
 
 ## How?
 
-- Use a Distributed Hash Table(DHT) to organize a P2P network (Chord)
+- Use a Distributed Hash Table (DHT) to organize a P2P network (Chord)
 - Use a variant on NameCoin to secure a list of servers and public keys and to
 record DNS registration and transfers.
 - Use the DHT to load balance and distribute responsibility for hosting DNS
@@ -32,7 +32,7 @@ records and certification keys.
 
 ## Distributed Hash Table (Chord)
 
-- Means of organizing communication and responsibility in a p2p network
+- Means of organizing communication and responsibility in a P2P network
 - Each peer is responsible for a verifiable span of hash values
 - Facilitates one-to-one communication and one-to-many communication
 
@@ -67,6 +67,6 @@ a record is required
 - Each node of the network acts as a DNS server reverse compatible with the DNS RFC
 - Any end user who wishes to use this DNS network sets any node as their DNS server (and ideally this node is nearby to the client)
 - Each node keeps a local hosts file that caches the results of recent and frequent results
-- If a node does not have the DNS record for a request locally or stored in the cache It may either internally seek the value or return its 
-best peer for that record depending on the recursive bit of the DNS request.
+- If a node does not have the DNS record for a request locally or stored in the cache, it may either internally seek the value or return its 
+best peer for that record, depending on the recursive bit of the DNS request.
 - Optionally, if a DNS request is for a domain the P2P DNS is not configured to manage, the request is forwarded to a conventional DNS server
