@@ -67,5 +67,6 @@ a record is required
 - Each node of the network acts as a DNS server reverse compatible with the DNS RFC
 - Any end user who wishes to use this DNS network sets any node as their DNS server (and ideally this node is nearby to the client)
 - Each node keeps a local hosts file that caches the results of recent and frequent results
-- If a node does not have the DNS record for a request locally or cached. If the request is marked recursive it sends a request for the node across the network. If the request is not marked recursive, a pointer to the closest known peer is given.
+- If a node does not have the DNS record for a request locally or stored in the cache It may either internally seek the value or return its 
+best peer for that record depending on the recursive bit of the DNS request.
 - Optionally, if a DNS request is for a domain the P2P DNS is not configured to manage, the request is forwarded to a conventional DNS server
