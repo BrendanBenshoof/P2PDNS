@@ -115,12 +115,18 @@ and keys.
 ## Distribution of DNS
 - Responsibility for serving DNS records is distributed across the network.
 - Each node acts as a DNS server reverse compatible with traditional DNS
-- Any user who wishes to use this DNS network sets any node as their DNS server (and ideally this node is nearby to the client)
+- Any user who wishes to use this DNS network sets any node as their DNS server 
+	- ideally this node is nearby to the client
+- Send DNS requests to that node. 
+
+..
 
 ## Retrieval
-- Each node keeps a caches of recent and frequent results
+- Each node has records of
+	- Addresses it's responsible for based on their hash value
+	- Chached recent and frequent result lookups
 - If a node does not have the DNS record for a request locally or stored in the cache, it may either:
-    - Retreive the value for the requester, getting its own copy
+    - Retrieve the value for the requester, getting its own copy
 	- Return its best peer for that record
 - Choice depends on the recursive bit of the DNS request.
 - Optionally, if a DNS request is for a domain the P2P DNS is not configured to manage, the request is forwarded to a conventional DNS server
