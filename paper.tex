@@ -34,28 +34,13 @@ corporation.
 
 \subsection{How?}
 
-\begin{itemize}
-\item
-  Use a Distributed Hash Table (DHT) to organize a P2P network (Chord)
-\item
-  Use a variant on NameCoin to secure a list of servers and public keys
-  and to record DNS registration and transfers.
-\item
-  Use the DHT to load balance and distribute responsibility for hosting
-  DNS records and certification keys.
-\end{itemize}
+We will use a Distributed Hash Table (DHT) to organize a P2P network, Chord in specific, to distribute the workload and authority over hash keys. We will use a variant on NameCoin to secure a list of servers and public keys  and to record DNS registration and transfers.
+
 \subsection{Distributed Hash Table (Chord)}
 
-\begin{itemize}
-\item
-  Means of organizing communication and responsibility in a P2P network
-\item
-  Each peer is responsible for a verifiable span of hash values
-\item
-  Facilitates one-to-one communication and one-to-many communication
-\end{itemize}
-\subsection{Namecoin Variant}
+Chord is a means of organizing communication and responsibility in a P2P network where each peer is responsible for a verifiable span of hash values. It facilitates one-to-one communication and one-to-many communication.
 
+\subsection{Namecoin}
 \begin{itemize}
 \item
   Allows for a shared, immutable and secure public records
@@ -130,10 +115,6 @@ corporation.
   in the cache, it may either internally seek the value or return its
   best peer for that record, depending on the recursive bit of the DNS
   request.
-\item
-  Optionally, if a DNS request is for a domain the P2P DNS is not
-  configured to manage, the request is forwarded to a conventional DNS
-  server
 \end{itemize}
 
 \subsection{Deliverables}
