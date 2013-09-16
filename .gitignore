@@ -1,0 +1,12 @@
+*.aux
+*.db
+*.log
+*.dvi
+*.blg
+*.bbl
+*.fdb_latexmk
+*.gz
+*.toc
+*.out
+*.snm
+*.nav
