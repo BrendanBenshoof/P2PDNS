@@ -12,8 +12,13 @@ class Main
     Service echo = new Service();
     int echo_id = addService(echo);
     int c_id = addService(new Clock(echo_id));
+    
+    //addService(new NetworkTest());
+    
     Message spoofed = new Message(echo_id, c_id, "kickstart");
     echo.outbox.offer(spoofed);
+
+
     start();
   }
   

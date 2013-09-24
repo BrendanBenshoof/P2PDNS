@@ -6,8 +6,7 @@ class Counter extends Service
   {
     count++;
     String c_text = Integer.toString(count);
-    sendMessage(m.origin, c_text);
-    
+    //sendMessage(m.origin, c_text);
   }
   
 }

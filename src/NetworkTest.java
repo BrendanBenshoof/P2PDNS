@@ -12,17 +12,30 @@ class NetworkTest extends Service
         public NetServer(NetworkTest N)
         {
             myservice = N;
-            server = new ServerSocket(9000);
+            try{
+                server = new ServerSocket(9000);
+            }
+            catch(IOException e)
+            {
+                System.out.println("looks like it broke");
+                System.exit(0);
+            }
         }
         
         public void run()
         {
             for(;;)
             {
+                try{
                 Socket client = server.accept();
                 OutputStream out = client.getOutputStream();
-                out.write("HELLO WORLD".getBytes());
+                out.write("HELLO WORLD\n".getBytes());
                 client.close();
+                }
+                catch(IOException e)
+                {
+                    System.out.println("it broke");
+                }
             }
         }
     }
@@ -33,6 +46,8 @@ class NetworkTest extends Service
     {
         super();
         server = new NetServer(this);
+        Thread serverThread = new Thread(server);
+        serverThread.start();
     }
     
 }

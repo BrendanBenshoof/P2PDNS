@@ -8,13 +8,14 @@ class Clock extends Service
   {
     Clock owner;
     int target;
+    int count = 0;
     public void run()
     {
       while(true)
       {
         try{
-      Thread.sleep(1000);
-      owner.sendMessage(target,"tick");
+      Thread.sleep(1);
+      owner.sendMessage(target,"tick"+count++);
         }
         catch(java.lang.InterruptedException e)
         {;}

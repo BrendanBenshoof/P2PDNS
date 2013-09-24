@@ -14,6 +14,12 @@ class Service implements Runnable
   {
     while(alive)
     {
+        try
+        {
+        Thread.sleep(0);
+        }
+        catch(InterruptedException e)
+        {;}
       Message m = inbox.poll();
       if(m != null)
       {
