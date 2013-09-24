@@ -1,14 +1,24 @@
 import java.util.ArrayList;
+import java.lang.Thread;
+
 
 class Router implements java.lang.Runnable
 {
   boolean alive = true;
   ArrayList<Service> table;
   static Router instance;
+  private Thread mythread;
   
   public Router()
   {
     table = new ArrayList<Service>();
+    mythread = new Thread(this);
+
+  }
+  
+  public void start()
+  {
+    mythread.start();
   }
   
   public static synchronized Router getInstance()

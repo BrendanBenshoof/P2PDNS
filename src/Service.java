@@ -1,6 +1,6 @@
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.lang.Runnable;
-
+import java.lang.Thread;
 
 class Service implements Runnable
 {
@@ -8,7 +8,7 @@ class Service implements Runnable
   ConcurrentLinkedQueue<Message> outbox;
   boolean alive = true;
   int myid = -1;
-  
+  private Thread mythread;
   
   public void run()
   {
@@ -34,10 +34,16 @@ class Service implements Runnable
     System.out.println(msg);
   }
   
+  public void start()
+  {
+      mythread.start();
+  }
+  
   public Service()
   {
     inbox = new ConcurrentLinkedQueue<Message>();
     outbox = new ConcurrentLinkedQueue<Message>();
+    mythread = new Thread(this);
   }
   
 }
