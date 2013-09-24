@@ -28,9 +28,26 @@ class NetworkTest extends Service
             {
                 try{
                 Socket client = server.accept();
-                OutputStream out = client.getOutputStream();
-                out.write("HELLO WORLD\n".getBytes());
-                client.close();
+                BufferedReader in = new BufferedReader(new InputStreamReader(
+                                        client.getInputStream()));
+                boolean done = false;
+                while(!done)
+                {
+                    try{
+                    String stuff = in.readLine();
+                    if(stuff == null)
+                    {
+                        done = true;
+                        break;
+                    }
+                    sendMessage(0,stuff);
+                    }
+                    catch(IOException e)
+                    {
+                        done = true;
+                    }
+                    
+                }
                 }
                 catch(IOException e)
                 {
