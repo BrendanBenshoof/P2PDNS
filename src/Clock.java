@@ -16,6 +16,10 @@ class Clock extends Service
         try{
       Thread.sleep(1);
       owner.sendMessage(target,"tick"+count++);
+        if(count > 10000)
+        {
+          System.exit(0);
+        }
         }
         catch(java.lang.InterruptedException e)
         {;}
