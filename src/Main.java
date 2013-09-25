@@ -9,10 +9,11 @@ class Main
     public static void main(String[] args)
     {
 
-        Service echo = new Service();
+        Service echo = new EchoService();
         int echo_id = addService(echo);
-        addService(new Clock(echo_id));
-        
+        for(int i =0; i< 100; i++) {
+            addService(new Clock(echo_id));
+        }
      // addService(new NetworkTest());
         
         
