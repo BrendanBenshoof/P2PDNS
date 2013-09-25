@@ -1,16 +1,22 @@
+import com.thoughtworks.xstream.XStream;
+
 public class Message
 {
-
-    public int origin;
+    static XStream mystream = new XStream();
+    static public int origin;
     public int dest;
     public String text;
-    public Message(int origin, int dest, String text)
+    public Message(int origin, int dest, Object o)
     {
         this.origin = origin;
         this.dest = dest;
-        this.text = text;
+        this.text = Message.mystream.toXML(o);
     }
-
+    
+    public Object deserialize()
+    {
+        return mystream.fromXML(this.text);
+    }
 
 
 }

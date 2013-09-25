@@ -33,7 +33,6 @@ public class NetworkTest extends Service
                 try{
                 Socket client = server.accept();
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 boolean done = false;
                 while(!done)
                 {
