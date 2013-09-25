@@ -1,4 +1,2 @@
 #!/bin/bash
-./build
-cd bin
-java Main
+./build &&( cd bin; java -cp .:../lib/*  Main ) 
