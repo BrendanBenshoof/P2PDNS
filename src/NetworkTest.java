@@ -15,7 +15,7 @@ public class NetworkTest extends Service
         {
             myservice = N;
             try{
-                server = new ServerSocket(9000);
+                server = new ServerSocket(8000);
             }
             catch(IOException e)
             {
@@ -32,30 +32,9 @@ public class NetworkTest extends Service
             {
                 try{
                 Socket client = server.accept();
-                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                boolean done = false;
-                while(!done)
-                {
-                    try{
-                    String stuff = in.readLine();
-                    if(stuff == null)
-                    {
-                        done = true;
-                        break;
-                    }
-                    sendMessage(0,stuff);
-                    }
-                    catch(IOException e)
-                    {
-                        done = true;
-                    }
-                    
+                new EchoSocketHandler(myservice, client);
                 }
-                }
-                catch(IOException e)
-                {
-                    System.out.println("it broke");
-                }
+                catch(IOException e){;}
             }
         }
     }
