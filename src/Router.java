@@ -4,66 +4,66 @@ import java.lang.Thread;
 
 class Router implements java.lang.Runnable
 {
-  boolean alive = true;
-  ArrayList<Service> table;
-  static Router instance;
-  private Thread mythread;
-  
-  public Router()
-  {
-    table = new ArrayList<Service>();
-    mythread = new Thread(this);
+    boolean alive = true;
+    ArrayList<Service> table;
+    static Router instance;
+    private Thread mythread;
+    
+    public Router()
+    {
+        table = new ArrayList<Service>();
+        mythread = new Thread(this);
 
-  }
-  
-  public void start()
-  {
-    mythread.start();
-  }
-  
-  public static synchronized Router getInstance()
-  {
-    if(instance==null)
-    {
-      instance = new Router();
     }
-    return instance;
-  }
-  
-  public void run()
-  {
-    while(alive)
+    
+    public void start()
     {
-        try
+        mythread.start();
+    }
+    
+    public static synchronized Router getInstance()
+    {
+        if(instance==null)
         {
-        Thread.sleep(1);
+            instance = new Router();
         }
-        catch(InterruptedException e)
-        {;}
-      route();
+        return instance;
     }
-  }
-
-  public void route()
-  {
-    for( Service s: table)
+    
+    public void run()
     {
-      Message m = s.outbox.poll();
-      while(m!=null)
-      {
-        Integer dest = m.dest;
-        table.get(dest).inbox.offer(m);
-        m = s.outbox.poll();
-      }
+        while(alive)
+        {
+                try
+                {
+                Thread.sleep(1);
+                }
+                catch(InterruptedException e)
+                {;}
+            route();
+        }
     }
-  }
-  
-  public int addService(Service s)
-  {
-    int res = table.size();
-    table.add(s);
-    s.myid = res;
-    return res;
-  }
-  
+
+    public void route()
+    {
+        for( Service s: table)
+        {
+            Message m = s.outbox.poll();
+            while(m!=null)
+            {
+                Integer dest = m.dest;
+                table.get(dest).inbox.offer(m);
+                m = s.outbox.poll();
+            }
+        }
+    }
+    
+    public int addService(Service s)
+    {
+        int res = table.size();
+        table.add(s);
+        s.myid = res;
+        return res;
+    }
+    
 }
