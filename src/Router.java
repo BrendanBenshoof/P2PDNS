@@ -34,12 +34,11 @@ class Router implements java.lang.Runnable
     {
         while(alive)
         {
-                try
-                {
-                Thread.sleep(1);
-                }
-                catch(InterruptedException e)
-                {;}
+            try
+            {
+                Thread.sleep(0);
+            }
+            catch(InterruptedException e){;}
             route();
         }
     }

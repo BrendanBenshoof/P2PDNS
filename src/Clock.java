@@ -27,6 +27,7 @@ class Clock extends Service
         }
     }
     
+    public void handleMessage(Message m){;}
     
     int target = 0;
     public Clock(int t)

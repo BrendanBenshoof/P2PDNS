@@ -4,8 +4,9 @@ import java.lang.Runnable;
 import java.io.*;
 
 
-class NetworkTest extends Service
+public class NetworkTest extends Service
 {
+    
     class NetServer implements Runnable
     {
         NetworkTest myservice;
@@ -23,14 +24,16 @@ class NetworkTest extends Service
             }
         }
         
+
+        
         public void run()
         {
             for(;;)
             {
                 try{
                 Socket client = server.accept();
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                                        client.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 boolean done = false;
                 while(!done)
                 {
@@ -59,7 +62,7 @@ class NetworkTest extends Service
     }
 
     NetServer server;
-    
+    public void handleMessage(Message m){;}
     public NetworkTest()
     {
         super();

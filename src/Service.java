@@ -2,24 +2,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.lang.Runnable;
 import java.lang.Thread;
 
-class Service implements Runnable
+abstract class Service implements Runnable
 {
     ConcurrentLinkedQueue<Message> inbox;
     ConcurrentLinkedQueue<Message> outbox;
-    boolean alive = true;
-    int myid = -1;
+    protected boolean alive = true;
+    protected int myid = -1;
     private Thread mythread;
     
     public void run()
     {
         while(alive)
         {
-                try
-                {
+            try
+            {
                 Thread.sleep(1);
-                }
-                catch(InterruptedException e)
-                {;}
+            }
+            catch(InterruptedException e)
+            {
+                ;
+            }
             Message m = inbox.poll();
             if(m != null)
             {
@@ -34,11 +36,7 @@ class Service implements Runnable
         outbox.offer(m);
     }
     
-    public void handleMessage(Message m)
-    {
-        String msg = m.text;
-        System.out.println(msg);
-    }
+    public abstract void handleMessage(Message m);
     
     public void start()
     {
