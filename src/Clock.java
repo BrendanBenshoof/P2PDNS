@@ -4,39 +4,39 @@ import java.lang.Runnable;
 
 class Clock extends Service
 {
-  private class Ticker implements Runnable
-  {
-    Clock owner;
-    int target;
-    int count = 0;
-    public void run()
+    private class Ticker implements Runnable
     {
-      while(true)
-      {
-        try{
-      Thread.sleep(1);
-      owner.sendMessage(target,"tick"+count++);
-        if(count > 10000)
+        Clock owner;
+        int target;
+        int count = 0;
+        public void run()
         {
-          System.exit(0);
+            while(true)
+            {
+                try{
+            Thread.sleep(1);
+            owner.sendMessage(target,"tick"+count++);
+                if(count > 10000)
+                {
+                    System.exit(0);
+                }
+                }
+                catch(java.lang.InterruptedException e)
+                {;}
+            }
         }
-        }
-        catch(java.lang.InterruptedException e)
-        {;}
-      }
     }
-  }
-  
-  
-  int target = 0;
-  public Clock(int t)
-  {
-    super();
-    Ticker tick = new Ticker();
-    tick.owner = this;
-    tick.target = t;
-    Thread ticker = new Thread(tick);
-    ticker.start();    
-  }
-  
+    
+    
+    int target = 0;
+    public Clock(int t)
+    {
+        super();
+        Ticker tick = new Ticker();
+        tick.owner = this;
+        tick.target = t;
+        Thread ticker = new Thread(tick);
+        ticker.start();        
+    }
+    
 }
