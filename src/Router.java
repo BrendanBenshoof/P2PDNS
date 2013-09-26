@@ -1,8 +1,12 @@
+package P2PDNS;
+
 import java.util.ArrayList;
 import java.lang.Thread;
 
+import P2PDNS.Services.*;
+import P2PDNS.MessageStructs.*;
 
-class Router implements java.lang.Runnable
+public class Router implements java.lang.Runnable
 {
     boolean alive = true;
     ArrayList<Service> table;

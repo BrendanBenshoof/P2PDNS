@@ -1,2 +1,2 @@
 #!/bin/bash
-./build &&( cd bin; java -cp .:../lib/*  Main ) 
+./build &&( cd bin; java -cp .:../lib/*  P2PDNS.Main ) 

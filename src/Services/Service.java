@@ -1,13 +1,17 @@
+package P2PDNS.Services;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.lang.Runnable;
 import java.lang.Thread;
 
-abstract class Service implements Runnable
+import P2PDNS.MessageStructs.*;
+
+public abstract class Service implements Runnable
 {
-    ConcurrentLinkedQueue<Message> inbox;
-    ConcurrentLinkedQueue<Message> outbox;
+    public ConcurrentLinkedQueue<Message> inbox;
+    public ConcurrentLinkedQueue<Message> outbox;
     protected boolean alive = true;
-    protected int myid = -1;
+    public int myid = -1;
     private Thread mythread;
     
     public void run()
@@ -30,7 +34,7 @@ abstract class Service implements Runnable
         }
     }
     
-    public void sendMessage(int dest, String message)
+    public void sendMessage(int dest, Object message)
     {
         Message m = new Message(myid, dest, message);
         outbox.offer(m);

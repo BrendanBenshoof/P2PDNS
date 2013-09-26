@@ -1,3 +1,5 @@
+package P2PDNS.MessageStructs;
+import P2PDNS.Services.*;
 import com.thoughtworks.xstream.XStream;
 
 public class Message

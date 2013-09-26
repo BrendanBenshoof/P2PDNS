@@ -1,8 +1,11 @@
+package P2PDNS.Services;
 import java.lang.Thread;
 import java.lang.Runnable;
+import P2PDNS.Services.*;
+import P2PDNS.MessageStructs.*;
 
 
-class Clock extends Service
+public class Clock extends Service
 {
     private class Ticker implements Runnable
     {

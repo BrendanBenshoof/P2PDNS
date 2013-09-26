@@ -1,8 +1,10 @@
+package P2PDNS;
 import java.lang.Thread;
 import java.util.ArrayList;
+import P2PDNS.Services.*;
+import P2PDNS.MessageStructs.*;
 
-
-class Main
+public class Main
 {
     static Router router = Router.getInstance();
     static ArrayList<Service> services = new ArrayList<Service>();

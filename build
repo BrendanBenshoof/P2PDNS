@@ -1,2 +1,2 @@
 #!/bin/bash
-javac -classpath "lib/*" -d bin src/*.java
+javac -classpath "lib/*" -d bin src/*.java src/*/*.java

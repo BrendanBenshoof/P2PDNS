@@ -1,7 +1,12 @@
-import java.net.Socket;
+package P2PDNS.Services;
+
+import java.net.*;
 import java.io.*;
 import java.lang.Thread;
 import java.lang.Runnable;
+
+
+
 public abstract class SocketHandler implements Runnable
 {   protected Service myService;
     protected Socket mySocket;
@@ -9,6 +14,13 @@ public abstract class SocketHandler implements Runnable
     {
         myService = parent;
         mySocket =s;
+        try{
+        s.setSoTimeout(10000);
+        }
+        catch(SocketException e)
+        {
+            System.out.println("failed to set socket timeout");
+        }
         Thread myThread = new Thread(this);
         myThread.start();
     }

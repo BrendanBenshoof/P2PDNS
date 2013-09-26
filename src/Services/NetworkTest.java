@@ -1,7 +1,11 @@
+package P2PDNS.Services;
+
 import java.net.*;
 import java.lang.Thread;
 import java.lang.Runnable;
 import java.io.*;
+import P2PDNS.Services.*;
+import P2PDNS.MessageStructs.*;
 
 
 public class NetworkTest extends Service
