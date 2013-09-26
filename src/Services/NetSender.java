@@ -18,7 +18,7 @@ public class NetSender extends Service
             SendMessageStruct R = (SendMessageStruct)(m.deserialize());
             try {
                 sock = new Socket(R.ip, R.port);
-                out = new PrintWriter(echoSocket.getOutputStream(), true);
+                out = new PrintWriter(sock.getOutputStream(), true);
                 out.println(R.msg);
                 sock.close();
             } catch (UnknownHostException e) {
@@ -27,7 +27,7 @@ public class NetSender extends Service
             } catch (IOException e) {
                 System.err.println("Couldn't get I/O for "
                                    + "the connection to: "+R.ip);
-                System.exit(1);
+                return;
             }
             System.out.println(R.msg);
 

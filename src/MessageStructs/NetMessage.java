@@ -1,10 +1,10 @@
 package P2PDNS.MessageStructs;
 public class NetMessage
 {
-    String contents;
-    String originip;
-    int originport;
-    int destport;
+    public String contents;
+    public String originip;
+    public int originport;
+    public int destport;
     
     public NetMessage(String contents, String origin, int oport, int dport)
     {

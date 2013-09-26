@@ -15,9 +15,10 @@ public class Main
         GLOBALS.ECHO = addService(echo);
         GLOBALS.NETSERV = addService(new NetServer());
         GLOBALS.NETSEND = addService(new NetSender());
-       Message m = new Message(GLOBALS.ECHO,GLOBALS.NETSERV,new RegisterStruct(8000,GLOBALS.ECHO ));
+        addService(new NetECHO());
+        //Message m = new Message(GLOBALS.ECHO,GLOBALS.NETSERV,new RegisterStruct(8000,GLOBALS.ECHO ));
         //System.out.println(m.text);
-        echo.outbox.offer(m);
+        //echo.outbox.offer(m);
 
         start();
     }
