@@ -20,7 +20,7 @@ public abstract class Service implements Runnable
         {
             try
             {
-                Thread.sleep(1);
+                Thread.sleep(2);
             }
             catch(InterruptedException e)
             {

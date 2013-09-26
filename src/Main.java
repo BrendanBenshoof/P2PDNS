@@ -13,13 +13,11 @@ public class Main
 
         Service echo = new EchoService();
         GLOBALS.ECHO = addService(echo);
-     //   for(int i =0; i<1; i++) {
-      //      addService(new Clock(echo_id));
-       // }
-     GLOBALS.NETSERV = addService(new NetServer());
+        GLOBALS.NETSERV = addService(new NetServer());
+        GLOBALS.NETSEND = addService(new NetSender());
        Message m = new Message(GLOBALS.ECHO,GLOBALS.NETSERV,new RegisterStruct(8000,GLOBALS.ECHO ));
         //System.out.println(m.text);
-        
+        echo.outbox.offer(m);
 
         start();
     }

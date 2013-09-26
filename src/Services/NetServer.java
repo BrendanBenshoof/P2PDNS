@@ -18,6 +18,7 @@ public class NetServer extends Service
         server = new NetListener(this, R.port, R.returnService);
         Thread serverThread = new Thread(server);
         serverThread.start();
+        System.out.println("started net server");
         }
         catch(ClassCastException e)
         {

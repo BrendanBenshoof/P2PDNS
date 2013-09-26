@@ -40,7 +40,7 @@ public class Router implements java.lang.Runnable
         {
             try
             {
-                Thread.sleep(0);
+                Thread.sleep(2);
             }
             catch(InterruptedException e){;}
             route();
