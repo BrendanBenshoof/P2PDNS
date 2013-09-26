@@ -14,7 +14,12 @@ public class Message
         this.dest = dest;
         this.text = Message.mystream.toXML(o);
     }
-    
+
+    public void setText(String t)
+    {
+        this.text = t;
+    }
+
     public Object deserialize()
     {
         return mystream.fromXML(this.text);

@@ -12,12 +12,12 @@ public class Main
     {
 
         Service echo = new EchoService();
-        int echo_id = addService(echo);
+        GLOBALS.ECHO = addService(echo);
      //   for(int i =0; i<1; i++) {
       //      addService(new Clock(echo_id));
        // }
-     addService(new NetworkTest());
-       // Message m = new Message(0,0,router);
+     GLOBALS.NETSERV = addService(new NetServer());
+       Message m = new Message(GLOBALS.ECHO,GLOBALS.NETSERV,new RegisterStruct(8000,GLOBALS.ECHO ));
         //System.out.println(m.text);
         
 

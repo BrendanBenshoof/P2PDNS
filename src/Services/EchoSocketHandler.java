@@ -5,13 +5,13 @@ import P2PDNS.MessageStructs.*;
 public class EchoSocketHandler extends SocketHandler
 {
     int forward;
-    public EchoSocketHandler(NetworkTest a, Socket b)
+    public EchoSocketHandler(Service a, Socket b)
     {
         super(a,b);
         forward = 0;
     }
     
-    public EchoSocketHandler(NetworkTest a, Socket b, int f)
+    public EchoSocketHandler(Service a, Socket b, int f)
     {
         super(a,b);
         forward = f;
