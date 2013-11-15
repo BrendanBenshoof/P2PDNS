@@ -1,0 +1,242 @@
+
+to find-successor [msg]  ;; node procedure
+                         ;; print msg
+  if suc != nobody
+  [
+    let id [seeking] of msg
+    let requestingNode [sender] of msg
+    ifelse nodeInRange (hid + 1)  [hid] of suc (id)
+    [
+      let target suc
+      ask msg 
+      [
+        hatch-updates 1 
+        [
+          ;;; ;; print "Hatch update"
+          set color sky
+          set connectTo target
+          set dest requestingNode
+          set in-ring [in-ring] of myself
+          face dest
+        ]
+      ]
+    ]
+    [
+      let target closest-preceding-node id
+      if target != self  ;; check this dear lawd  
+      [ 
+        ask  msg [hatch-seekers 1 
+          [
+            ; ;; ;; print "Hatch find suc"
+            set label ""
+            set color blue
+            set dest target
+            set in-ring [in-ring] of myself
+            face target
+          ]
+        ]
+      ] 
+    ]
+  ]
+  ask msg [die]
+end
+
+to-report closest-preceding-node [id] ;; node procedure
+  foreach reverse fingers ;; needs to go from highest finger to lowest
+  [  
+    if ? !=  nobody
+    [
+      if nodeInRange ([hid + 1] of self) (id - 1) ([hid] of ?) 
+      [
+        report ?
+      ]
+    ]
+  ]
+  
+  report self
+end
+
+
+
+;;;;;;;;;;;;; below here todo handle making links to sucessor
+
+
+to create-network  ;; create an empty chord ring
+  ;; print self
+  set pred nobody 
+  set suc self
+  set in-ring random 139
+  init-fingers
+end
+
+
+
+;;;change for in-ring?
+to join-closest ;; node procedure
+  ;join-node min-one-of other (nodes with [in-ring? = false]) [distance myself]
+  let n one-of nodes in-radius Radius with [in-ring != -1]
+  ;; print [in-ring?] of n 
+  join-node n
+end
+
+
+to join-node [n];;node procedure to join node ns ring
+  set pred nobody 
+  set suc nobody
+  init-fingers
+  hatch-seekers 1
+  [
+    ;;; ;; print "Hatch join node"
+    set label ""
+    set sender myself
+    set seeking [hid] of myself
+    set slot 0
+    set dest n
+    set in-ring [in-ring] of n
+    face dest
+    ;; print dest
+  ]
+  ;; print [in-ring?] of n
+end
+
+to join-better-ring [n]
+  if fix-problem
+  [
+  set in-ring [in-ring] of n
+  set pred nobody
+  set suc n
+  set fingers n-values Hash_Degree [nobody]
+  set fingers replace-item 0 fingers suc
+  rebuild-links
+  ask my-in-links [die]
+  
+  hatch-seekers 1
+  [
+    ;;; ;; print "Hatch join node"
+    set label ""
+    set sender myself
+    set seeking [hid] of myself
+    set slot 0
+    set dest n
+    set in-ring [in-ring] of n
+    face dest
+    ;; print dest
+  ]
+  ]
+  
+end
+
+
+
+to consider-joining [n]
+  if better-ring? n [join-better-ring n]
+end
+
+
+to-report  better-ring? [n]
+  report [in-ring] of n > in-ring
+end
+
+
+to fix-rings
+  let alien-nodes  one-of other nodes in-radius Radius with [in-ring > -1 and [in-ring] of myself != in-ring]
+  if alien-nodes != nobody[ ask alien-nodes  [ consider-joining myself ]]
+
+end
+
+
+
+
+
+
+
+to init-fingers ;; call procedure after setting pred and/or suc
+  set next 0
+end
+
+
+;;called by a node to ensure the ring is properly maintained
+to stabalize
+  if suc != nobody [
+    let x [pred] of suc 
+    
+    if x != nobody [ 
+      if nodeInRange (hid + 1) ([hid - 1] of suc) ([hid] of x) 
+      [
+        ;; update vars
+        set suc x
+        set fingers replace-item 0 fingers suc
+        rebuild-links
+        
+      ]
+    ]
+    ask suc [notify myself]
+  ]
+end
+
+
+to rebuild-links
+  ask my-out-links [die]
+  foreach fingers 
+  [
+    if ? != nobody and ? != self [ create-link-to ? [set color (wrap-color ([in-ring] of myself / 10) * 10 + 5)]]
+  ]
+end
+
+
+
+to notify [n]
+  ifelse pred = nobody
+  [set pred n]
+  [if nodeInRange ([hid + 1] of pred) (hid - 1) ([hid] of n) [set pred n]]
+end
+
+
+
+to fix-fingers
+  set next next + 1
+  if next > Hash_Degree - 1 [set next 0]
+  hatch-seekers 1
+    [
+      set label ""
+      set sender myself
+      set dest myself
+      set seeking [hid + 2 ^ next] of dest
+      set slot [next] of dest
+       ;; "send" to myself first to get the ball rolling, only meaningful way to do it with agents
+      set in-ring [in-ring] of myself
+      face dest
+    ]
+end
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Here are new message handling functions
+
+
+
+;;This turtle procedure is used when a node finds a
+;;update message directed at itself
+to receive-update [msg]
+  ;; ;; print "got update"
+  let myslot [slot] of msg
+  
+  ;; update finger table 
+  set fingers replace-item myslot fingers [connectTo] of msg
+  
+  ;;clean up
+  if myslot = 0 [
+    set suc [connectTo] of msg
+    ;set in-ring ([in-ring] of [connectTo] of msg)
+  ]
+  
+  if in-ring < 0 [set in-ring ([in-ring] of [connectTo] of msg)]
+  
+  rebuild-links 
+  
+  ask msg [die]
+end
