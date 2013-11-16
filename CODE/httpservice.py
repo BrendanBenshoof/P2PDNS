@@ -49,7 +49,7 @@ WEBSERV = None
 
 class WEBSERVICE(Service):
     """docstring for Database"""
-    def __init__(self, db):
+    def __init__(self, db, blockchain = None):
         global WEBSERV
         self.db = db
         WEBSERV = self
@@ -58,6 +58,7 @@ class WEBSERVICE(Service):
         self.open_requests = {}
         self.webserver = threading.Thread(target = start_web)
         self.webserver.start()
+        self.blockchain = blockchain
 
     def attach(self, owner, callback):
         """Called when the service is attached to the node"""
@@ -80,12 +81,20 @@ class WEBSERVICE(Service):
         return msg.service == self.service_id
 
     def http_get(self,path):
+        path = [1:]
         key = hash_util.hash_str(path)
         self.open_requests[key] = Open_request(self, path)
-        return self.open_requests[key].get_file(blocking=True)
+        data = self.open_requests[key].get_file(blocking=True)
+        raw, sig = data.rsplit("\n",1)
+        if self.blockchain.validate(raw,sig,path):
+            return raw
+        else:
+            return "403 Forbidden"
+
         
     def http_post(self,path,data):
-        self.db.put_record(path,data)
+        pass
+        #self.db.put_record(path,data)
     
     def attach_to_console(self):
         ### return a list of command-strings

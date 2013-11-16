@@ -1,6 +1,8 @@
 #Mining Service
+import voronoinode as node
 from message import Message
 from service import Service
+from userinfo import *
 import hash_util
 import rsa
 import time
@@ -8,75 +10,9 @@ import time
 d_rate = 0.110924374808
 difficulty = (2.0**160-1)*d_rate
 
-class UserInfo(object):
-    def __init__(self, handle, hashid, publickey, privatekey = None):
-        self.handle = handle
-        self.hashid = hashid
-        self.publickey = publickey
-        self.privatekey = privatekey
-
-    def encrypt(self,msg):
-        return rsa.encrypt(msg, self.publickey)
-        #d = triple_des(self.key)
-        #return d.encrypt(msg, padmode=PAD_PKCS5)
-
-    def decrypt(self,msg):
-        return rsa.decrypt(msg, self.privatekey)
-        #d = triple_des(self.key, padmode=PAD_PKCS5)
-        #return d.decrypt(msg)
-
-    def sign(self, msg):
-        hash_to_sign = hash_util.hash_str(msg).key
-        return rsa.encrypt(hash_to_sign, self.publickey)
-
-    def validate(self, msg, signature):
-        unsigned = rsa.decrypt(signature, self.publickey)
-        hash_to_sign = hash_util.hash_str(msg).key
-
-        return unsigned == hash_to_sign
-
-    @classmethod
-    def generate_new(cls, handle):
-        (pubkey, privkey) = rsa.newkeys(512)
-        pubkey_str = hex(pubkey.n)[:-1]+"?"+hex(pubkey.e)[:-1]
-        myhash = hash_util.hash_str(pubkey_str)
-        return SecNodeInfo(handle,myhash,pubkey,privkey)
-
-    def pub_key_str(self):
-        return hex(self.publickey.n).replace("L", "")+"?"+hex(self.publickey.e).replace("L", "")
-
-    def private_key_str(self):
-        return '%(n)x?%(e)x?%(d)x?%(p)x?%(q)x' % self.privatekey
-
-    @classmethod
-    def from_secret(cls, string):
-        if string == "NONE":
-            return None
-        parts = string.split(":")
-        ##print parts
-        if len(parts) < 3:
-            return None
-        handle = parts[0]
-        hashid = hash_util.Key(parts[1])
-        keyparts = parts[2].split("?")
-        pubkey = rsa.PublicKey(int(keyparts[0],16),int(keyparts[1],16))
-        prikey = None
-        if len(parts) == 4:
-            keyparts = parts[3].split("?")
-            keyints = map( lambda x: int(x,16), keyparts)
-            prikey = rsa.PrivateKey(keyints[0],keyints[1],keyints[2],keyints[3],keyints[4])
-        return SecNodeInfo(handle, hashid, pubkey, prikey)
-
-    def gen_secret(self,prikey=False):
-        if prikey and self.privatekey:
-            return self.handle+":"+str(self.hashid.key)+":"+self.pub_key_str()+":"+self.private_key_str()
-        else:
-            return self.handle+":"+str(self.hashid.key)+":"+self.pub_key_str()
-
-
 class minerMessage(Message):
     def __init__(self,type):
-        super(minerMessage).__init__("MINER",type)
+        Message.__init__(self,"MINER",type)
 
 class Miner_Service(Service):
     """Handler of Chord behavoir and internal messages"""
@@ -89,8 +25,31 @@ class Miner_Service(Service):
     def handle_message(self, msg):
         ##new block messages
         ##catchup messages
-        if msg.type ="newblock":
-        pass
+        if msg.type =="newblock":
+            raw_block = msg.msg.get_content("block")
+            parsed_block = Block.gen(raw_block)
+            state = self.chainhandler.offer(parsed_block) #true if this is valid new block
+            if state:
+                new_msg = minerMessage("newblock")
+                new_msg.add_content("block",raw_block)
+                for p in node.peers:
+                    new_msg.destination_key = p.key
+                    self.send(new_msg, p)
+        if msg.type == "catchup":
+            last_id = msg.get_content("last key")
+            response = []
+            for k in self.chainhandler.blocks.keys():
+                if int(k) > last_id:
+                    response.append(str(self.chainhandler.blocks[k]))
+            resp = minerMessage("catchup-reply")
+            resp.destination_key = msg.reply_to.key
+            resp.add_content("blocks", response)
+            self.send(resp, msg.reply_to)
+        if msg.type == "catchup-reply":
+            for raw_b in msg.get_content("blocks"):
+                b= Block.gen(raw_b)
+                self.chainhandler.offer(b)
+
 
     def attach_to_console(self):
         ### return a list of command-strings
@@ -101,7 +60,17 @@ class Miner_Service(Service):
         return ["claim", "update-chain"]
 
     def handle_command(self, comand_st, arg_str):
-        pass
+        domain_owner = "Brendan:0x540be95c12e72a28c32388994ff0efb12ac63ca7:0x800b400ed966fcc0d4807adf5e884f1ed6af227aaeb00c463ebdf473d4da1b9bde466a9d155df80dbc565575a5130344691425d0f705c88514d77912f3fd339d?0x10001>"
+        if comand_st == "claim":
+            t = transaction()
+            t.fromUser = "AWARD"
+            t.toUser = domain_owner
+            raw = self.chainhandler.mine([],t)
+            new_msg = minerMessage("newblock")
+            new_msg.add_content("block",raw)
+            for p in node.peers:
+                new_msg.destination_key = p.key
+                self.send(new_msg, p)
 
 
 class transaction(object):
@@ -229,6 +198,11 @@ class blockchain_manager(object):
             return self.domains[domain]
         else:
             return None
+
+    def validate(self, RAW_DNS, sig, domain):
+        owner = self.get_owner(domain)
+        return owner.validate(RAW_DNS,sig)
+
     def offer(self, newblock):
         #does it match the last block?
         if self.currentBlock.gethashval() == newblock.lasthash:

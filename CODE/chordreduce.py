@@ -13,8 +13,8 @@ import filesystem_service
 import threading 
 import sys
 import map_reduce
-
-
+import minerServ
+import httpservice
 import json
 from urllib2 import urlopen
 
@@ -67,7 +67,9 @@ def setup_Node(addr="localhost", port=None):
     add_service(service.ECHO_service())
     add_service(filesystem_service.FileSystem())
     add_service(map_reduce.Map_Reduce_Service())
-    #add_service(httpservice.WEBSERVICE(database))
+    minerserv = minerServ.Miner_Service()
+    add_service(minerserv)
+    add_service(httpservice.WEBSERVICE(database, minerserv.chainHandler))
     
     ####
     attach_services()

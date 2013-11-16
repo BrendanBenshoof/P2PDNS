@@ -24,8 +24,6 @@ class Message(object):
         self.contents = {}          # All other data
         self.service = service      # What service handles this
         self.type = type
-        self.success_callback_msg = success_callback_msg
-        self.failed_callback_msg = failed_callback_msg
         self.finger = None          # int -1 to 160
         self.priority = 10 #default to lowest
 
