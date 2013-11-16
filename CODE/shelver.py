@@ -80,7 +80,7 @@ class Shelver(Service):
 
     def attach_to_console(self):
         ### return a dict of command-strings
-        return ["put","get","test_store","test_get"]
+        return ["put","get","test_store","test_get", "putf"]
 
     def handle_command(self, command_st, arg_str):
         ### one of your commands got typed in
@@ -89,6 +89,12 @@ class Shelver(Service):
             key = args[0]
             value = args[1]
             self.put_record(key,value)
+        if command_st == "putf":
+            args = arg_str.split(" ",1)
+            key = args[0]
+            fname = args[1]
+            data = open(fname,"r").read()
+            self.put_record(key,data)
         elif command_st == "get":
             self.get_record(arg_str)
         elif command_st == "test_store":
