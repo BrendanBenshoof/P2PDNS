@@ -84,7 +84,7 @@ class Miner_Service(Service):
         super(Miner_Service, self).__init__()
         self.service_id = "MINER"
         self.priority = 1 #highest priority
-        self.chainhandler = blockchain_manager()
+        self.chainhandler = blockchain_manager("meh")
         self.chainhandler.bootstrap()
     def handle_message(self, msg):
         ##new block messages
@@ -274,7 +274,3 @@ class blockchain_manager(object):
         return str(newblock)
 
 
-
-blockchain_manager("bleh")
-
-        
