@@ -1,3 +1,8 @@
+#!/usr/bin/python
+import sys
+sin = sys.stdin
+out = sys.stdout
+
 def parse(request):
     request =  request.split() # request is a string
     if len(request) == 2 :
@@ -51,6 +56,21 @@ def handleQuery(query):
     return response
 
 
-q1 = "Q\t"+"www.trapezoids.org\t" +"IN\t" +"A\t"+"-1\t"+"127.0.0.1"
 
-print parse(q1)
+def read(sin, out):
+    helo = sin.readline()
+    if not helo.startswith("HELO"):
+        return
+    print >>out, "OK\n"
+    out.flush()
+    while True:
+        line = sin.readline()
+        if not line:
+            break
+        ans = parse(line)
+        print >>out, ans 
+        out.flush()
+#q1 = "Q\t"+"www.trapezoids.org\t" +"IN\t" +"A\t"+"-1\t"+"127.0.0.1"
+
+
+read(sin, out)
