@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import sys
+import urllib2
+
 sin = sys.stdin
 out = sys.stdout
 log = open("/home/andrew/P2PDNS/CODE/log",'w')
@@ -23,7 +25,8 @@ def handleAX(q):
 # records are the following format, each line's elements are tab seperated
 # DATA	qname		qclass	qtype	ttl	id  content	
 def queryServer(url):
-    if url.startswith("cname."):
+    records = urllib2.urlopen("http://127.0.0.1:9080/"+url).read()
+    """if url.startswith("cname."):
         return "DATA\tcname."+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.91"
     records  = "DATA\t"+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.89\n"
     records += "DATA\t"+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.90\n"
@@ -33,6 +36,9 @@ def queryServer(url):
     records += "DATA\t"+url+"\tIN\t"+"SOA\t" + "3600\t" +"-1\t" +"ahu.example.com\n"
     records += "DATA\t"+url+"\tIN\t"+"CNAME\t" + "3600\t" +"-1\t" +"cname."+url+"\n"
     records += "DATA\t"+url+"\tIN\t"+"NS\t" + "3600\t" +"-1\t" +"ns1.chronus.edu"
+    """
+    if recods.startswith("40"):
+        return "FAIL"
     return records
 
 
@@ -51,6 +57,8 @@ def handleQuery(query):
     records = records.split("\n")
     response = "" 
     for record in records:
+        if record == [] or record.startswith("#"):
+            continue
         elements = record.split()
         rtype =elements[3]
         if qtype == rtype or qtype =="ANY":
@@ -81,6 +89,5 @@ def read(sin, out):
         out.flush()
         log.flush()
 #q1 = "Q\t"+"www.trapezoids.org\t" +"IN\t" +"A\t"+"-1\t"+"127.0.0.1"
-
 
 read(sin, out)
