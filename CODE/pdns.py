@@ -2,9 +2,12 @@
 import sys
 sin = sys.stdin
 out = sys.stdout
+log = open("/home/andrew/P2PDNS/CODE/log",'w')
 
 def parse(request):
-    request =  request.split() # request is a string
+    log.write(request)
+    log.flush()
+    request =  request.split() # request is a string    
     if len(request) == 2 :
         return handleAX(request)
     elif len(request)>=6 :
@@ -12,22 +15,23 @@ def parse(request):
         
 
 
-def handleAX():
-    pass
-    
+def handleAX(q):
+    return "END\n"
 
 #asks the server to lookup this url
 #returns a string with all the relvent entries
 # records are the following format, each line's elements are tab seperated
 # DATA	qname		qclass	qtype	ttl	id  content	
 def queryServer(url):
+    if url.startswith("cname."):
+        return "DATA\tcname."+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.91"
     records  = "DATA\t"+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.89\n"
     records += "DATA\t"+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.90\n"
-    records += "DATA\t"+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.91\n"
-    records += "DATA\tchronus."+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.92\n"
+    records += "DATA\tcname."+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.91\n"
+    records += "DATA\t"+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.92\n"
     records += "DATA\t"+url+"\tIN\t"+"TXT\t" + "3600\t" +"-1\t" +"Hi mom!\n"
-    records += "DATA\t"+url+"\tIN\t"+"SOA\t" + "3600\t" +"-1\t" +"ahu.example.com ns1.example.com 2008080300 1800 3600 604800 3600\n"
-    records += "DATA\t"+url+"\tIN\t"+"CNAME\t" + "3600\t" +"-1\t" +"chronus."+url+"\n"
+    records += "DATA\t"+url+"\tIN\t"+"SOA\t" + "3600\t" +"-1\t" +"ahu.example.com\n"
+    records += "DATA\t"+url+"\tIN\t"+"CNAME\t" + "3600\t" +"-1\t" +"cname."+url+"\n"
     records += "DATA\t"+url+"\tIN\t"+"NS\t" + "3600\t" +"-1\t" +"ns1.chronus.edu"
     return records
 
@@ -52,24 +56,30 @@ def handleQuery(query):
         if qtype == rtype or qtype =="ANY":
             response += record
             response += "\n"
-    response += "END"
+    response += "END\n"
     return response
 
 
 
 def read(sin, out):
     helo = sin.readline()
+    log.write(helo)
+    log.flush()
     if not helo.startswith("HELO"):
         return
-    print >>out, "OK\n"
+    out.write("OK\n")
+    log.write("OK\n")
     out.flush()
+    log.flush()
     while True:
         line = sin.readline()
         if not line:
             break
         ans = parse(line)
-        print >>out, ans 
+        log.write(ans)
+        out.write(ans)
         out.flush()
+        log.flush()
 #q1 = "Q\t"+"www.trapezoids.org\t" +"IN\t" +"A\t"+"-1\t"+"127.0.0.1"
 
 
