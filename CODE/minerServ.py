@@ -60,11 +60,13 @@ class Miner_Service(Service):
         return ["claim", "update-chain"]
 
     def handle_command(self, comand_st, arg_str):
-        domain_owner = "Brendan:0x540be95c12e72a28c32388994ff0efb12ac63ca7:0x800b400ed966fcc0d4807adf5e884f1ed6af227aaeb00c463ebdf473d4da1b9bde466a9d155df80dbc565575a5130344691425d0f705c88514d77912f3fd339d?0x10001>"
+        args = arg_str.split(" ")
+        domain_owner = UserInfo.load(args[0])
         if comand_st == "claim":
             t = transaction()
             t.fromUser = "AWARD"
-            t.toUser = domain_owner
+            t.toUser = domain_owner.gen_secret(False)
+            t.domain = args[1]
             raw = self.chainhandler.mine([],t)
             new_msg = minerMessage("newblock")
             new_msg.add_content("block",raw)
@@ -201,7 +203,11 @@ class blockchain_manager(object):
 
     def validate(self, RAW_DNS, sig, domain):
         owner = self.get_owner(domain)
-        return owner.validate(RAW_DNS,sig)
+        print domain
+        if not owner is None:
+            owner = UserInfo.from_secret(owner)
+            return owner.validate(RAW_DNS,sig)
+        return False
 
     def offer(self, newblock):
         #does it match the last block?

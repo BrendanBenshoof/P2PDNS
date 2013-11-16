@@ -19,18 +19,19 @@ class UserInfo(object):
         #return d.decrypt(msg)
 
     def sign(self, msg):
-        hash_to_sign = hash_util.hash_str(msg).key
-        return rsa.encrypt(hash_to_sign, self.publickey)
+        return rsa.sign(msg, self.privatekey)
+
+    @classmethod
+    def load(cls, filename):
+        data = open(filename+".userinfo","r").read()
+        return cls.from_secret(data)
 
     def validate(self, msg, signature):
-        unsigned = rsa.decrypt(signature, self.publickey)
-        hash_to_sign = hash_util.hash_str(msg).key
-
-        return unsigned == hash_to_sign
+        return rsa.verify(msg, signature, self.publickey)
 
     @classmethod
     def generate_new(cls, handle):
-        (pubkey, privkey) = rsa.newkeys(512)
+        (pubkey, privkey) = rsa.newkeys(1024)
         pubkey_str = hex(pubkey.n)[:-1]+"?"+hex(pubkey.e)[:-1]
         myhash = hash_util.hash_str(pubkey_str)
         return UserInfo(handle,myhash,pubkey,privkey)

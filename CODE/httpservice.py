@@ -81,16 +81,21 @@ class WEBSERVICE(Service):
         return msg.service == self.service_id
 
     def http_get(self,path):
-        path = [1:]
+        path = path[1:].upper()
+        possible = path.split(".")
+        path = possible[-2]
         key = hash_util.hash_str(path)
         self.open_requests[key] = Open_request(self, path)
         data = self.open_requests[key].get_file(blocking=True)
-        raw, sig = data.rsplit("\n",1)
-        if self.blockchain.validate(raw,sig,path):
-            return raw
-        else:
-            return "403 Forbidden"
-
+        try:
+            raw = data[:-64]
+            sig = data[-64:]
+            if self.blockchain.validate(raw,sig,path):
+                return raw
+            else:
+                return "403 Forbidden"
+        except ValueError:
+            return data
         
     def http_post(self,path,data):
         pass

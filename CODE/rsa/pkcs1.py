@@ -239,7 +239,7 @@ def decrypt(crypto, priv_key):
     
     return cleartext[sep_idx+1:]
     
-def sign(message, priv_key, hash):
+def sign(message, priv_key, hash='SHA-256'):
     '''Signs the message with the private key.
 
     Hashes the message, then signs the hash with the given key. This is known
@@ -318,8 +318,8 @@ def verify(message, signature, pub_key):
     message_hash = _hash(message, method_name)
 
     # Compare the real hash to the hash in the signature
-    if message_hash != signature_hash:
-        raise VerificationError('Verification failed')
+    return message_hash != signature_hash
+        
 
 def _hash(message, method_name):
     '''Returns the message digest.

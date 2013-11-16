@@ -69,7 +69,7 @@ def setup_Node(addr="localhost", port=None):
     add_service(map_reduce.Map_Reduce_Service())
     minerserv = minerServ.Miner_Service()
     add_service(minerserv)
-    add_service(httpservice.WEBSERVICE(database, minerserv.chainHandler))
+    add_service(httpservice.WEBSERVICE(database, minerserv.chainhandler))
     
     ####
     attach_services()
