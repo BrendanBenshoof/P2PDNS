@@ -5,19 +5,25 @@ import random
 
 sin = sys.stdin
 out = sys.stdout
-log = open("/home/andrew/P2PDNS/CODE/log" +str(random.random()),'w')
+log = open("/tmp/log" +str(random.random()),'w')
 
 def parse(request):
     log.write(request)
     log.flush()
     if request.startswith("PING"):
-        return "PING"
+        log.write("PARSE PING")
+        log.flush()
+        return "PING\n"
     request =  request.split() # request is a string    
     if len(request) == 2 :
+        log.write("#"+str(request))
+        log.flush()
         return handleAX(request)
     elif len(request)>=6 :
+        log.write("#"+str(request))
+        log.flush()
         return handleQuery(request)
-    return "FAIL"    
+    return "FAIL\n"    
 
 
 def handleAX(q):
@@ -28,7 +34,7 @@ def handleAX(q):
 # records are the following format, each line's elements are tab seperated
 # DATA	qname		qclass	qtype	ttl	id  content	
 def queryServer(url):
-    records = urllib2.urlopen("http://192.168.0.102:9080/"+url).read()
+    records = urllib2.urlopen("http://0.0.0.0:9080/"+url).read()
     """if url.startswith("cname."):
         return "DATA\tcname."+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.91"
     records  = "DATA\t"+url+"\tIN\t"+"A\t" + "3600\t" +"-1\t" +"123.45.67.89\n"
@@ -86,6 +92,8 @@ def read(sin, out):
         line = sin.readline()
         if not line:
             break
+        log.write("#pre parse")
+        log.flush()
         ans = parse(line)
         log.write(str(ans))
         out.write(str(ans))

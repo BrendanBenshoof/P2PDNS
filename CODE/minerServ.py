@@ -26,7 +26,7 @@ class Miner_Service(Service):
         ##new block messages
         ##catchup messages
         if msg.type =="newblock":
-            raw_block = msg.msg.get_content("block")
+            raw_block = msg.get_content("block")
             parsed_block = Block.gen(raw_block)
             state = self.chainhandler.offer(parsed_block) #true if this is valid new block
             if state:
@@ -34,7 +34,7 @@ class Miner_Service(Service):
                 new_msg.add_content("block",raw_block)
                 for p in node.peers:
                     new_msg.destination_key = p.key
-                    self.send(new_msg, p)
+                    self.send_message(new_msg, p)
         if msg.type == "catchup":
             last_id = msg.get_content("last key")
             response = []
@@ -44,7 +44,7 @@ class Miner_Service(Service):
             resp = minerMessage("catchup-reply")
             resp.destination_key = msg.reply_to.key
             resp.add_content("blocks", response)
-            self.send(resp, msg.reply_to)
+            self.send_message(resp, msg.reply_to)
         if msg.type == "catchup-reply":
             for raw_b in msg.get_content("blocks"):
                 b= Block.gen(raw_b)
@@ -72,7 +72,7 @@ class Miner_Service(Service):
             new_msg.add_content("block",raw)
             for p in node.peers:
                 new_msg.destination_key = p.key
-                self.send(new_msg, p)
+                self.send_message(new_msg, p)
 
 
 class transaction(object):
