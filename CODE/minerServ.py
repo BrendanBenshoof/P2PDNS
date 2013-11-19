@@ -6,9 +6,17 @@ from userinfo import *
 import hash_util
 import rsa
 import time
+import os
+from random import choice
 
 d_rate = 0.110924374808
 difficulty = (2.0**160-1)*d_rate
+GENSIS_BLOCK = """0
+0
+0+.+AWARD+Brendan:0x540be95c12e72a28c32388994ff0efb12ac63ca7:0x800b400ed966fcc0d4807adf5e884f1ed6af227aaeb00c463ebdf473d4da1b9bde466a9d155df80dbc565575a5130344691425d0f705c88514d77912f3fd339d?0x10001>++
+1384617855.6170001
+0"""
+
 
 class minerMessage(Message):
     def __init__(self,type):
@@ -20,7 +28,7 @@ class Miner_Service(Service):
         super(Miner_Service, self).__init__()
         self.service_id = "MINER"
         self.priority = 1 #highest priority
-        self.chainhandler = blockchain_manager("meh")
+        self.chainhandler = blockchain_manager(".\\DB\\")
         self.chainhandler.bootstrap()
     def handle_message(self, msg):
         ##new block messages
@@ -36,6 +44,7 @@ class Miner_Service(Service):
                     new_msg.destination_key = p.key
                     self.send_message(new_msg, p)
         if msg.type == "catchup":
+            print "got a catchup"
             last_id = msg.get_content("last key")
             response = []
             for k in self.chainhandler.blocks.keys():
@@ -46,6 +55,7 @@ class Miner_Service(Service):
             resp.add_content("blocks", response)
             self.send_message(resp, msg.reply_to)
         if msg.type == "catchup-reply":
+            print "got a catchup-reply"
             for raw_b in msg.get_content("blocks"):
                 b= Block.gen(raw_b)
                 self.chainhandler.offer(b)
@@ -57,12 +67,12 @@ class Miner_Service(Service):
         #Make sure there is a record of my own userinfo
         #Check and see if there is a mining todo list
         #start mining subprocesses
-        return ["claim", "update-chain"]
+        return ["claim", "update-chain","save"]
 
     def handle_command(self, comand_st, arg_str):
-        args = arg_str.split(" ")
-        domain_owner = UserInfo.load(args[0])
         if comand_st == "claim":
+            args = arg_str.split(" ")
+            domain_owner = UserInfo.load(args[0])
             t = transaction()
             t.fromUser = "AWARD"
             t.toUser = domain_owner.gen_secret(False)
@@ -73,6 +83,17 @@ class Miner_Service(Service):
             for p in node.peers:
                 new_msg.destination_key = p.key
                 self.send_message(new_msg, p)
+        if comand_st == "save":
+            self.chainhandler.write()
+        if comand_st == "update-chain":
+            self.chainhandler.currentBlock = Block.gen(GENSIS_BLOCK)
+            self.chainhandler.blockid = 0
+            p = choice(node.peers)
+            m = minerMessage("catchup")
+            m.reply_to = self.owner
+            m.add_content("last key",0)
+            self.send_message(m,p)
+
 
 
 class transaction(object):
@@ -181,19 +202,8 @@ class blockchain_manager(object):
         self.domains = {}
 
     def bootstrap(self):
-        newblock = Block.gen("""0
-0
-0+.+AWARD+Brendan:0x540be95c12e72a28c32388994ff0efb12ac63ca7:0x800b400ed966fcc0d4807adf5e884f1ed6af227aaeb00c463ebdf473d4da1b9bde466a9d155df80dbc565575a5130344691425d0f705c88514d77912f3fd339d?0x10001>++
-1384617855.6170001
-0
-""")
-        self.blocks["0"] = newblock
+        newblock = Block.gen(GENSIS_BLOCK)
         self.currentBlock = newblock
-        newaward = transaction()
-        newaward.fromUser = "AWARD"
-        newaward.toUser = "Brendan:0x540be95c12e72a28c32388994ff0efb12ac63ca7:0x800b400ed966fcc0d4807adf5e884f1ed6af227aaeb00c463ebdf473d4da1b9bde466a9d155df80dbc565575a5130344691425d0f705c88514d77912f3fd339d?0x10001>"
-        newaward.domain = "test"
-        self.mine([],newaward)
 
     def get_owner(self,domain):
         if domain in self.domains.keys():
@@ -201,12 +211,36 @@ class blockchain_manager(object):
         else:
             return None
 
+    def write(self):
+        for k in self.blocks:
+            fp  = open(os.path.join(self.dir,k+".block"),"w+")
+            fp.write(str(self.blocks[k]))
+            fp.close()
+
+    def load(self):
+        loaded = {}
+        onlyfiles = [ f for f in os.listdir(self.dir) if os.path.isfile(os.path.join(self.dir,f)) ]
+        for fname in onlyfiles:
+            if fname[-6:] == ".block":
+                fp = open(os.path.join(self.dir,fname),"r")
+                raw = fp.read()
+                b = Block.gen(raw)
+                k = fname[:-6]
+                loaded[k] = b
+        keys = sorted(loaded.keys(), key=int)
+        for k in keys:
+            if not self.offer(loaded[k]):
+                break
+
     def validate(self, RAW_DNS, sig, domain):
         owner = self.get_owner(domain)
         print domain
         if not owner is None:
             owner = UserInfo.from_secret(owner)
-            return owner.validate(RAW_DNS,sig)
+            try:
+                return owner.validate(RAW_DNS,sig)
+            except VerificationError:
+                return False
         return False
 
     def offer(self, newblock):
@@ -226,6 +260,7 @@ class blockchain_manager(object):
                     self.blocks[newblock.blockid] = newblock
                     self.currentBlock = newblock
                     self.currentid = int(newblock.blockid)
+                    print "Block Accepted:"+str(self.currentid)
                     return True
         return False
 
