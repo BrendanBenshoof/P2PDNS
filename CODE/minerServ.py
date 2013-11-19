@@ -46,17 +46,19 @@ class Miner_Service(Service):
         if msg.type == "catchup":
             print "got a catchup"
             last_id = msg.get_content("last key")
-            response = []
+            response = {}
             for k in self.chainhandler.blocks.keys():
                 if int(k) > last_id:
-                    response.append(str(self.chainhandler.blocks[k]))
+                    response[k] = str(self.chainhandler.blocks[k])
             resp = minerMessage("catchup-reply")
             resp.destination_key = msg.reply_to.key
             resp.add_content("blocks", response)
             self.send_message(resp, msg.reply_to)
         if msg.type == "catchup-reply":
             print "got a catchup-reply"
-            for raw_b in msg.get_content("blocks"):
+            print sorted(msg.get_content("blocks").keys(), key=int)
+            for k in sorted(msg.get_content("blocks").keys(), key=int):
+                raw_b = msg.get_content("blocks")[k]
                 b= Block.gen(raw_b)
                 self.chainhandler.offer(b)
 
