@@ -82,7 +82,7 @@ ctrlPort = 9500
 key = ""
 
 peers = []
-blacklist = []
+blacklist = [thisNode]
 
 
 #services
@@ -179,7 +179,7 @@ def stabilize(message):
     if TEST_MODE:
         print "Stabilize"
     x = message.get_content("peers")
-    newblacklist = []
+    newblacklist = [thisNode]
     for p in blacklist:
         if p in x:
             x.remove(p)
