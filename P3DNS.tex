@@ -54,6 +54,8 @@ We created a software package to replace the top level of the Domain Name system
 
 \section{Introduction}
 
+
+The Domain Name System, commonly referred to as DNS \cite{mockapetris2003rfc} \cite{mockapetris2004rfc}, is a fundamental component of the Internet.
 DNS is really cool and important.  Without it, we'd be force to punch in numbers instead of names to find a website.    
 
 There are some issues with DNS, which is pretty much the same now as it was when it was proposed.  Now we've inherited those issues
@@ -68,6 +70,14 @@ We have a system that can eliminate or at least lessen the severity of either is
 This paper is intended to address concerns raised by Cox et al\cite{cox} and propose a viable decentralized DNS replacement based on a DHT. Our proposed improvements on the DNS alternative presented by Cox et al are full reverse compatibility with the current hierarchical DNS system and a shared authenticated public record that allows for DNSSEC style authentication.
 
 \section{Background or somesuch}
+
+\subsection{DNS Overview}
+
+DNS has a heirarchical structure.
+
+Knocking out certain servers can deny interent access to an entire region
+
+\subsection{Related Work}
 What were the concerns of the cox paper \cite{cox}?  
 Higher latency because chord (plus none of the chord advantages). 
 Wasn't extensible.  Served static records.  Really nothing more than a distributed text file
