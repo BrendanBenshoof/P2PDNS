@@ -138,6 +138,53 @@ We utilize the transaction record of bitcoin to record ownership of domain names
 \subsection{Using a Blockchain to replace certificiate authority}
 The shared record of the blockchain allows any participant in the mining network to act as a trusted third party to clients. This way trust is not centralized in single points of failure. Internally members of the DHT are also members of the blockchain network (as it is convient to use the DHT overlay as the Blockchain network overlay network) and thus all pushed records to the DHT and retrived records can be confirmed as legitimate before transmission to the end user. This limits the viability of replay or injection based attacks.
 
+
+\begin{algorithm}
+\caption{Blockchain mining}
+\label{mining}
+\begin{algorithmic}[1]  % the number is how many 
+\STATE Given previous Block $B_{-1}$
+\STATE Given New Transaction Set $T$
+\STATE Given Difficulty $D$
+\STATE Given Reward destionation $R$
+\STATE New Block $B_0$ = $HASH(B_{-1})|T|R|Timestamp$
+\STATE Block Attempt $b$ = $B_0|Nonce$
+\WHILE {$HASH(b)<D$}
+	\STATE Block Attempt $b$ = $B_0|Nonce$
+\ENDWHILE
+\STATE Propogate $b$ as next block
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Blockchain Transaction Validation}
+\label{mining}
+\begin{algorithmic}[1]  % the number is how many 
+\STATE A new transaction $t$ consits of: Award domain $D$ to user $U$ with proof reference $P$ and signature $S$
+\STATE The transaction set $T$ is the set of all transactions considered valid
+\IF{$P$ is not marked used}
+	\IF{owner indicated in $P$ matches signature $S$}
+		\IF{$D$ matches domain referenced in $P$}
+    		\STATE Mark $P$ as used
+            \STATE Consider $t$ valid
+        \ELSE
+         	\IF{$P$ is a mining reward}
+            	\STATE $P$ is an unclaimed mining reward
+                \IF{$D$ is not yet claimed}
+                	\STATE Mark $P$ as used
+                    \STATE Mark $D$ as claimed
+                    \STATE Consider $t$ valid
+                \ENDIF
+			\ENDIF
+         \ENDIF
+    \ENDIF
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
 \subsection{Unadressed Security Issues}
 The Blockchain does not solve all security issues relavent to DNS authentication and security. Exit nodes could lie or have packets inject to clients until the protocol from DNS server to client is improved. The DHT structure opens up unexplored disruption attacks on the overlay topology.
 
@@ -155,22 +202,75 @@ The naive method of doing so is to assign coordinates to servers based on embedd
 \begin{algorithm}
 \caption{Vhash Maintence Cycle}
 \label{maintence}
-\begin{algorithmic}[0]  % the number is how many 
-	\STATE $P$ is the list of peers
-    
+\begin{algorithmic}[1]  % the number is how many 
+	\STATE $P_0$ is this node's set of peers
+    \STATE $T$ is the maintence period
+    \WHILE{Node is running}
+    	\FORALL{node $n$ in $P_0$}
+        	\STATE Send a Maintence Message containing $P_0$ to $n$
+        \ENDFOR
+    \STATE Wait $T$ seconds
+    \ENDWHILE
 \end{algorithmic}
 \end{algorithm}
 
 \begin{algorithm}
 \caption{Vhash Handle Maintence Message}
 \label{handelmaintence}
-\begin{algorithmic}[0]  % the number is how many 
-	\STATE hungry
+\begin{algorithmic}[1]  % the number is how many 
+	\STATE $P_0$ is this node's set of peers
+	\STATE Recive a Maintence Message from peer $n$ containg its set of peers:$P_n$
+    \FORALL{Peers $p$ in $P_n$}
+    	\STATE Consider $p$ as a member of $P_0$
+        \IF{$p$ should join $P_0$}
+        	\STATE Add $p$ to $P_0$
+            \FORALL {Other peers $i$ in $p$}
+            	\IF{$i$ is occuluded by $p$}
+                	\STATE remove $i$ from $P_0$
+                \ENDIF
+            \ENDFOR
+        \ENDIF
+    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}
+\caption{Vhash Join}
+\label{routing}
+\begin{algorithmic}[1]  % the number is how many 
+\STATE new node $N$ wishes to join and has location $L$
+\STATE $N$ knows node $x$ to be a member of the network
+\STATE $N$ sends a request to join, addressed to $L$ via $x$
+\STATE node $Parent$ is responsible for location $L$ and recives the join message
+\STATE $Parent$ sends to $N$ its own location and list of peers
+\STATE $Parent$ integrates $N$ into its peer set
+\STATE $N$ builds its peer list from $N$ and its peers
+\STATE regular maintence updates other peers
+\end{algorithmic}
+\end{algorithm}
 
-I'm referencing algorithm \ref{lapel}
+\begin{algorithm}
+\caption{Vhash Routing}
+\label{routing}
+\begin{algorithmic}[1]  % the number is how many 
+	\STATE $P_0$ is this node's set of peers
+    \STATE $N$ is this node
+	\STATE $m$ is a message addresed for $L$
+    \STATE $Forwards$ is the set $P_0\cup{}N$
+    \STATE find $C$: member of $Forwards$ which has the shortest distance to $L$
+    \IF{$C$ is $N$}
+    	\STATE $N$ is the responsible party.
+        \STATE Handle $m$
+    \ELSE
+    	\STATE Forward $m$ to $C$ for handleing or further routing
+    \ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Toroidal Distance Equation}
+
+Given two vector locations $\vec{a}$ and $\vec{b}$ on a  $d$ dimensional unit cube
+\[ distance = \sqrt[|d|]{\sum\limits_{i\in d} (\min(|\vec{a}_i-\vec{b}_i|,1.0-|\vec{a}_i-\vec{b}_i|))^2}\]
 
 \subsection{Mechanism}
 VHash maps nodes to an overlay arbitrary $d$ dimension toroidal unit space. This is essentially a hypercube with wrapping edges. The toroidal property makes some visualization and mathmatical properties difficult \footnote{which one} but allows for a space without a sparse edge  \footnote{a picture here would help demonstrate this}.  The lack of a edge due to wrapping allows higher dimension spaces to be embedded with less error \footnote{I assume we prove this somewhere}.
@@ -204,14 +304,16 @@ Each node in the network performs maintenence periodically by sending nodes a ma
 
 When messages sent to a peer fail, it is assumed the peer has left the network. The leaving peer is removed from the peer list and canidates from the set of 2-hop peers provided by other peers move in to replace it.
 
-There is no protocol for a "polite" exit from the network. The DHT protocol assumes nodes will fail and the diference between an intended failure and unintended failure is unecessary. The only issue this causes is that software should be designed to fail totaly when issues arrise rather then attempt to fulfil only part of the protocol rather then to partialy fail and result poor coverage of the region for which it is responsible.
+There is no protocol for a "polite" exit from the network. The DHT protocol assumes nodes will fail and the diference between an intended failure and unintended failure is unecessary. The only issue this causes is that software should be designed to fail totaly when issues arrise rather then attempt to fulfill only part of the protocol.  
 
 \subsection{Data Storage and Backups}
-Primary goal of a DHT is to provide a storage medium. We extend this idea such that work and information can be assigned to nodes using the same paradigm. Resources in the network, be they raw data or assigned tasks, are assigned hash locations. The node responsible for a given hash location is responsible for the maintence of that resource. When a node fails, its peers take responsibility of it's space, thus it is important to provide peers with frequent backups of a node's assigned resources, such that if a node fails, its peers can imideately assume its responsibilities.
+The primary goal of a DHT is to provide a distributed storage medium. We extend this idea  to distribute work and information among nodes using the same paradigm. Resources in the network, be it raw data or assigned tasks, are assigned hash locations. The node responsible for a given hash location is responsible for the maintence of that resource. When a node fails, its peers take responsibility of its space. Thus it is important to provide peers with frequent backups of a node's assigned resources.  That way, when a node fails, its peers can immediately assume its responsibilities.
 
-\subsubsection{Resource Storage}
-When a resource is to be stored on the network, it is assigned a hash location. The hash locations assigned could be random, a hash of an identifier, or have specifc meaning for an embeding problem. A message is send to the assigned hash location which contains the resource and the network forwards it to the responsible server, who then stores the resource in a local hash table based on its hash location.
-When a resource is to be retrived from the network, the retriver must know the hash location to which it was stored. A data request message is addressed to the hash location of the resource and is recived by the responsible node who replys with the requested resource or an error message should nothign be stored at that location. Some options are imediately aparent for dealing with wasted storage space: If usage of the system is temporary then accept the loss of efficency. If a system is primarily read driven, record the time or last read or a frequency of use such that resources that are unused are deleted. If a system is write driven, allow the resource to be assigned a time to live when it is written, which can be updated as needed.
+When a resource is to be stored on the network, it is assigned a hash location. The hash locations assigned could be random, a hash of an identifier, or have specific meaning for an embedding problem. The node responsible for that resaource's hash location stores the resource.
+
+A resource is accessed by contacting the node responsible for the resource.  However, the requester generally has no idea which node is responsible for any particular resource.  The data request messsage is addressed to the location corresponding to the resource, rather than the node responsible for that location.  The message is forwarded over the overlay network, each hop bringong the node closer until it reaches the responsible node, who sends the resource or an error if the resource does not exist.
+
+Some options are imediately apparent for dealing with wasted storage space. If usage of the system is temporary then accept the loss of efficency \footnote{If the data is intended to be stored only temporarily, then there is an inevitable hit to efficiency.}.  A system that is primarily read driven can record the time of the last read or a frequency of reads such that resources that are not read often enough after a certain period of time are deleted. If a system is write driven, allow the resource to be assigned a time to live, which can be updated as needed.
 
 \subsection{Backups}
 At a frequency set by the node manager or at a frequency set by any adaptive process to optimize backup frequency, a node send a message containing backups of the resources for which it is newly responsible to each of its peers. To minimize bandwidth and time wasted by backups, the node should only send the records changed since last backup
@@ -272,6 +374,11 @@ Using all of these components together allows us to create a system with the fol
 	\item Extensibility - The DNS reverse compatibility allows any DNS extension to be utilized, if dynamic resolution is required a name server record can be stored in the DHT to point to a user's specialized DNS servers.
 	\item Decentralization - Both the DHT and Blockchain can operate without the support of any controlling organization, this offers security against corruption and abuse.
 \end{itemize}	
+
+
+\section{Practical Demonstration}
+D$^3$NS was successfully  deonstrated.  We did it in class
+
 
 
 \section{Conclusion and Future Work}
