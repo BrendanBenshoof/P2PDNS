@@ -38,7 +38,7 @@
 
 %%% The "real" document content comes below...
 
-\title{P$^{3}$DNS}
+\title{The Distributed Dynamic Domain Name Service}
 \author{
 Brendan Benshoof \qquad Andrew Rosen  \\Department of Computer Science, Georgia State University\\ 34 Peachtree St NW \\ Atlanta, Georgia 30303\\  bbenshoof@cs.gsu.edu }
 %\date{} % Activate to display a given date or no date (if empty),
@@ -48,31 +48,42 @@ Brendan Benshoof \qquad Andrew Rosen  \\Department of Computer Science, Georgia 
 \maketitle
 
 \begin{abstract}
-We created a software package to replace the top level of the Domain Name system.  It is reverse compatible with traditional DNS and requires no modifications on the end of the user.
+We have created a system to replace the top level of the Domain Name system. The goal is to replace the top level of DNS with a network of authoratative name servers sharing their DNS records over a DHT.
+
+We attempt to address the core problem posed by centralized trusted third parties. Specifically that centralized authorities are a single point of failure for trust. We seek to diffuse the responsibility of these system such that abuse of trust is more difficult.
+
+It is reverse compatible with traditional DNS and entirely transparent to end users.
+
+
 \end{abstract}
 
 
 \section{Introduction}
-The Domain Name System, commonly referred to as DNS \cite{mockapetris2003rfc} \cite{mockapetris2004rfc}, is a fundamental component of the Internet.  DNs maps easily remembered names to the numerical IP addresses used by computers to communicate over IP. 
+The Domain Name System, commonly referred to as DNS \cite{mockapetris2003rfc} \cite{mockapetris2004rfc}, is a fundamental component of the Internet.  DNs maps memorible names to the numerical IP addresses used by computers to communicate over IP. 
+
+%cut this for conference?
+Two recent events in the United states have brought DNS to the forfront of networking and security research.  First is recent legislation proposed in the US House of Representatives and US Senate. The Stop Online Piracy Act (SOPA) \cite{sopa} and PROTECT IP Act (PIPA) \cite{pipa} were both introduced in 2011.  There were numerous aspects to both bills, but essential to both was that DNS (non-authoratative?) servers located in the US would be required filter DNS records on demand, essentially fratcuring the DNS system.  There would be no guarantree that DNS could serve the same information to two different users.
+
+More recent are the leaks of classified information elucidating the extent of the NSA's spying capabilities. These leaks have raised questions about the security of SSL and TLS, as well as the level of trust that users place in certificate authorities.
+
+These types of threats to DNS, along with security concerns, were not considered when designing the protocol, but DNS is too widely used and too integerated with the Internet as a whole to be replaced.    Extensions such as DNSSEC \cite{blacka2013clarifications} add authentication and data integrity, but do not alter the fundenental architecture of the DNS network.
+
+This paper proposes the Distributed Dynamic Domain Name Service, or D$^{3}$NS.  D$^{3}$NS is a completely decentralized Domain Name Service operating over a Distributed Hash Table (DHT).  D$^{3}$NS does not replace the DNS protocol, but rather adds robustness to the architecture as a whole.  Internally, D$^3$NS signs all DNS records using public/private keys.
 
 
-There are some issues with DNS, which is pretty much the same now as it was when it was proposed.  Now we've inherited those issues.  DNS architecture serves the world, but is based in the united states
+The rest of the paper is consists of the following sections.  Section gives an overview of DNS and identifies prior research in the area of distributed DNS.  Section covers the modified blockchain used for record authentication in D$^3$NS.  Section presents VHash, a DHT that we designed for D$^3$NS.  Section defines the various components of D$^3$NS, while Section details our implementation of D$^3$NS.  We discuss our conclusions and future work in Section.
 
 
-Two recent events in the United states have brought DNS to the forfront of networking and security research.  First is recent legislation proposed in the US House of Representatives \cite{sopa} and US Senate \cite{pipa}.
-
-
-The most pressing issues are:
-An ill advised law that doesn't understand how the internet works.
-The big trusted certificate issuers are native to the US and don't want get on the bad side of DHS/NSA/FBI/ETC
-
-We have a system that can eliminate or at least lessen the severity of either issue.
-
-This paper is intended to address concerns raised by Cox et al\cite{cox} and propose a viable decentralized DNS replacement based on a DHT. Our proposed improvements on the DNS alternative presented by Cox et al are full reverse compatibility with the current hierarchical DNS system and a shared authenticated public record that allows for DNSSEC style authentication.
 
 \section{Background}
 
+
+
 ITT we talk about DNS and work related to this paper.
+
+
+This paper is intended to address concerns raised by Cox et al\cite{cox} and propose a viable decentralized DNS replacement based on a DHT. Our proposed improvements on the DNS alternative presented by Cox et al are full reverse compatibility with the current hierarchical DNS system and a shared authenticated public record that allows for DNSSEC style authentication.
+
 
 \subsection{DNS Overview}
 
@@ -86,7 +97,7 @@ PROTECT IP is bad \cite{crocker2011security}
 
 These bills would have required that servers maintained in the US filter specified domain names, preventing users from obtaining the correct IP address for the domain name in question. The 
 
-This filtering is incompatable with the DNS Securtity Extensions (DNSSEC)\cite{crocker2011security}. 
+This filtering is incompatable with the DNS Securtity Extensions (DNSSEC) \cite{crocker2011security}. 
 
 The mandated dns filtering would drive users to unregulated DNS servers, which would create more attack vectors where users could have their traffic rredirected to a malicious website. 
 
@@ -96,7 +107,7 @@ Higher latency because chord (plus none of the chord advantages).
 Wasn't extensible.  Served static records.  Really nothing more than a distributed text file
 Not incentivised. No reason not be a defector in the system.
 
-Advantages:  DDNS is more resistant to DDOS attacks.  Load balancing 
+Advantages:  DDNS is more resistant to DDOS attacks.  Load balancing.
 
 
 \section{Blockchain}
@@ -107,11 +118,17 @@ Bitcoin is a decentralized method of currency. Here we are particularly concerne
 
 Bitcoin's blockchain is essentially a shared ledger.  The blockchain is a record of every single transaction made using the Bitcoin system. Each transation refers to previous transactions to indiacate the funds handled by a given transaction are in fact own by the user iniating the transactions. The record is validated by traversing the tree of transactions and marking referenced transactions as used. A valid blockchain has all non-leaf node transaction marked as used only once.
 
-\subsection{Using the Blockchain for DNS records}
-How does our blockchain differ?  Why do we a different blockchain.  Ours is smaller because we don't want to keep all those records. That's expensive! 
+Each block in the chain is a series of transactions published during the time it takes to mine that block. A block is mined by generating a nonce field on the block chain such that the hash of the entire block is less then a difficulty value. This difficulty sets the rate at which new blocks are mined and it adjusted in reference to the number of miners. When a block is mined, it is transmitted to the network and each transaction in it is validated by each peer. The network then begins to mine the next block.
 
-We still mine for blocks.  Difficulty still to be determined.
 
+\subsection{Using the Blockchain to validate DNS records}
+We utilize the transaction record of bitcoin to record ownership of domain names. The reward and incentive for mining a new block is a record that allots the miner the right to claim a domain name. The transactions in each block indicate miners claiming a new domain or the transfer of domain ownership. claims of new domains are validated by a reference to an unclaimed mining reward owned by the claiming user. Transfers are validated by a pointer to an unused pevious transfer record or claim record indicating ownership by the transfering party. This way every domain name in the system can be associated with an owner's private key. New domains can be claimed and old domains can be transfered between owners.
+
+\subsection{Using a Blockchain to replace certificiate authority}
+The shared record of the blockchain allows any participant in the mining network to act as a trusted third party to clients. This way trust is not centralized in single points of failure. Internally members of the DHT are also members of the blockchain network (as it is convient to use the DHT overlay as the Blockchain network overlay network) and thus all pushed records to the DHT and retrived records can be confirmed as legitimate before transmission to the end user. This limits the viability of replay or injection based attacks.
+
+\subsection{Unadressed Security Issues}
+The Blockchain does not solve all security issues relavent to DNS authentication and security. Exit nodes could lie or have packets inject to clients until the protocol from DNS server to client is improved. The DHT structure opens up unexplored disruption attacks on the overlay topology.
 
 \section{VHash}
 VHASH was born of a deficency in current DHT mechanisms to allow for spacial representation of hash locations. The intent is that meaning can be ascribed to locations in the DHT and facilitate more efficent function. Specifically in this example we seek to build a minimal latency overlay network for the DHT so a global scale DHT is viable and efficent. The naive method of doing so is to assign coordiants to servers based on embedding location of nodes on the planet earth. More complex appraches would be to approximate a minium latency space based on inter-node latency.
@@ -124,7 +141,7 @@ VHASH nodes are responsible for the address space defined by thier voronoi regio
 
 \subsection{Relation to Voronoi Diagrams and Delunay Triangulation}
 
-Vhash does not strictly solve Voronoi diagrams \cite{voronoi}. The toroidal nature of the space precluids from straightforward application of the mechanisms described here\cite{voronoi}. However the algorithim does approximate a graph with similar properties. Rather than attempt to calculate the voronoi region of each node, it simply filters locations assigning responsibility to the nearest node. An online algorithim maintains the set of peers which define the node's voronoi region. The set of peers required to define a node's voronoi region descibe a solution to the dual Delunay Triangulation.
+Vhash does not strictly solve Voronoi diagrams \cite{voronoi}. The toroidal nature of the space precluids straightforward application of the mechanisms described here\cite{voronoi}. However the algorithim does approximate a graph with similar properties. Rather than attempt to calculate the voronoi region of each node, it simply filters locations assigning responsibility to the nearest node. An online algorithim maintains the set of peers which define the node's voronoi region. The set of peers required to define a node's voronoi region descibe a solution to the dual Delunay Triangulation.
 
 
 
@@ -134,7 +151,7 @@ Maintence and joining are handled by a simple periodic mechanism. A notification
 \subsection{Message Routing}
 Messages are routed over the overlay network using a simple algorithim. A node maintains a minimal list of peers to define it's own voronoi region.  From the perspective of the node, the entire voronoi region is defined only by its peers.
 
-When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amoungst the node and its peers. If the destinion falls within its own region then it is responsible and handles the message acordingly. The node otherwise forwards the message to the closest peer to the destination location. This process describes a pre-computed and cached A* \cite{astar} routing algorithim. A* offers $O(log(n))$ hop routing.
+When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amoungst the node and its peers. If the destinion falls within its own region then it is responsible and handles the message acordingly. The node otherwise forwards the message to the closest peer to the destination location. This process describes a pre-computed and cached A* \cite{astar} routing algorithim. A* offers $O(\log(n))$ hop routing.
 
 
 
@@ -150,10 +167,10 @@ There is no protocol for polite exit from the network as it is unessisary. The D
 
 Our worst case scenarios only occcur in contrived scenarios and are astronomically improbable assuming a random distribution of points.
 
-\section{P$^{3}$DNS}
-P$^{3}$DNS has logically descrete components which provide DNS efficent record storage, Domain name ownership management and verification, DNS backwards compatitibility, all of which may be logically replaced or have individual optimizations. P$^{3}$DNS uses a DHT to store DNS records in a distributed fashion, A blockchain and Namecoin\cite{namecoin} analog to manage domain name ownership.
+\section{D$^{3}$NS}
+D$^{3}$NS has logically descrete components which provide DNS efficent record storage, Domain name ownership management and verification, DNS backwards compatitibility, all of which may be logically replaced or have individual optimizations. D$^{3}$NS uses a DHT to store DNS records in a distributed fashion, A blockchain and Namecoin\cite{namecoin} analog to manage domain name ownership.
 
-P$^{3}$DNS utilizes public and private key encryption for signing and verifying records.
+D$^{3}$NS utilizes public and private key encryption for signing and verifying records.
 
 
 \subsection{Distributed Hash Table}
@@ -166,10 +183,10 @@ As a result we chose to develop a prototype DHT to meet this requirement to act 
 \subsection{DNS frontend}
 Because this system is intended to be reverse compatible with the existing DNS protocol, we serve the data provided by the DHT after it has been authenticated by the block chain to other DNS servers or clients. DNS nodes incorporated into the DDDNS system will not request data from other DNS servers and will only exchange data via the DHT 
 
-\section{Usage}
+\section{Implementation}
 Im not sure what to put here, this indicates it needs to be re-organized
 \subsection{Establishment of a New domain}
-Under the current DNS system, a new domain name is purchased from a company registered with the Internet Corporation for Assigned Names and Numbers (ICANN). That company adds the domain name and a record provided by the owner to the TLD servers. The owner or management company then maintains a name server to answer DNS requests for the purchased domain. In P$^{3}$DNS new domain names are instead awarded as part of the blockchain mining process or purchased from a previous owner, then transferred to the new owner. These assignments and transfers are both recorded in the blockchain. 
+Under the current DNS system, a new domain name is purchased from a company registered with the Internet Corporation for Assigned Names and Numbers (ICANN). That company adds the domain name and a record provided by the owner to the TLD servers. The owner or management company then maintains a name server to answer DNS requests for the purchased domain. In D$^{3}$NS new domain names are instead awarded as part of the blockchain mining process or purchased from a previous owner, then transferred to the new owner. These assignments and transfers are both recorded in the blockchain. 
 
 A prospective domain owner can create their own mining software and mine a domain name or purchase a domain name voucher from a miner and exchange it for a domain name. In the blockchain, domain name owners are referred to by their public key which is used to authenticate records and transfer domains. Loss of the private key of an account will result in the loss of ability to update DNS records and ability to transfer the domain. 
 
@@ -181,7 +198,7 @@ A properly configured P2PDNS server should not accept a DNS records which has no
 \subsection{Looking up a DNS record}
 In the current DNS a record is looked up using a UDP system that queries a tree of requests. clients send queries to a local DNS server which acts as a resolver and cache. If a portion of the domain name is unknown the resolver sends a request to the responsible server and looks up recursively from there.
 
-This system is largely unchanged under P$^{3}$DNS from the point of view of the resolver and client. Ideally the resolver or client has chosen a nearby member of the P$^{3}$DNS network as its root domain server (it can also maintain a large list of backup servers should its current one fail). The resolver requests a domain’s record from the P$^{3}$DNS node. The node then forwards the request to the responsible party. If any node along the route has a valid cache of the required record, then that server responds and routes the message back to the entry node.All nodes along the route cache the response to aid future queries.
+This system is largely unchanged under D$^{3}$NS from the point of view of the resolver and client. Ideally the resolver or client has chosen a nearby member of the D$^{3}$NS network as its root domain server (it can also maintain a large list of backup servers should its current one fail). The resolver requests a domain’s record from the D$^{3}$NS node. The node then forwards the request to the responsible party. If any node along the route has a valid cache of the required record, then that server responds and routes the message back to the entry node.All nodes along the route cache the response to aid future queries.
 
 \subsection{Caching}
 DHT(DNS?) needs to aggressively cache lookups. Previous investigations into optimizing caching on a DHT saw good results \cite{irm} however with the sepcific application of DNS in mind the time to live field on DNS records deffers the caching optimization problem onto users who we may or may not trust.
