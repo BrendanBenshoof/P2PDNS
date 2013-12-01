@@ -25,6 +25,9 @@
 \usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
 \usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
 \usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+\usepackage{algorithm} 
+\usepackage{algorithmic}
+
 % These packages are all incorporated in the memoir class to one degree or another...
 
 %%% HEADERS & FOOTERS
@@ -64,11 +67,19 @@ The Domain Name System, commonly referred to as DNS \cite{mockapetris2003rfc} \c
 %cut this for conference?
 Two recent events in the United states have brought DNS to the forfront of networking and security research.  First is recent legislation proposed in the US House of Representatives and US Senate. The Stop Online Piracy Act (SOPA) \cite{sopa} and PROTECT IP Act (PIPA) \cite{pipa} were both introduced in 2011.  There were numerous aspects to both bills, but essential to both was that DNS (non-authoratative?) servers located in the US would be required filter DNS records on demand, essentially fratcuring the DNS system.  There would be no guarantree that DNS could serve the same information to two different users.
 
+
 More recent are the leaks of classified information elucidating the extent of the NSA's spying capabilities. These leaks have raised questions about the security of SSL and TLS, as well as the level of trust that users place in certificate authorities.
 
-These types of threats to DNS, along with security concerns, were not considered when designing the protocol, but DNS is too widely used and too integerated with the Internet as a whole to be replaced.    Extensions such as DNSSEC \cite{blacka2013clarifications} add authentication and data integrity, but do not alter the fundenental architecture of the DNS network.
+There have been many explorations and attempts\cite{cox}\cite{pappas}\cite{ramasubramanian2004design} to propose a DNS system based on a distributed hash table\cite{chord}. We extend on those papers by implementing a DHT which minimizes latency distance rather than hop distance and implementing a shared record of ownership based on recent developments in cryptocurency.\cite{bitcoin}\cite{namecoin}
+
+These types of threats to DNS, along with security concerns, were not considered when designing the protocol, but DNS is too widely used and too integerated with the Internet as a whole to be replaced. Extensions such as DNSSEC \cite{blacka2013clarifications} add authentication and data integrity, but do not alter the fundenental architecture of the DNS network.
+
 
 This paper proposes the Distributed Dynamic Domain Name Service, or D$^{3}$NS.  D$^{3}$NS is a completely decentralized Domain Name Service operating over a Distributed Hash Table (DHT).  D$^{3}$NS does not replace the DNS protocol, but rather adds robustness to the architecture as a whole.  Internally, D$^3$NS signs all DNS records using public/private keys.
+
+
+We show that D$^{3}$NS satisfies the objections to a decentralized DNS system posed by Cox et al/cite{cox}, specificaly: dramatically reducing latency, retaining the extensibility of the orginal DNS system, and changing the intended scope of use to address incentive issues. We show D$^{3}$NS allows for new authentication methods and a means of decentralized proof of ownership beyond that of Cox et al's work. 
+
 
 
 The rest of the paper is consists of the following sections.  Section gives an overview of DNS and identifies prior research in the area of distributed DNS.  Section covers the modified blockchain used for record authentication in D$^3$NS.  Section presents VHash, a DHT that we designed for D$^3$NS.  Section defines the various components of D$^3$NS, while Section details our implementation of D$^3$NS.  We discuss our conclusions and future work in Section.
@@ -130,42 +141,83 @@ The shared record of the blockchain allows any participant in the mining network
 \subsection{Unadressed Security Issues}
 The Blockchain does not solve all security issues relavent to DNS authentication and security. Exit nodes could lie or have packets inject to clients until the protocol from DNS server to client is improved. The DHT structure opens up unexplored disruption attacks on the overlay topology.
 
-\section{VHash}
-VHASH was born of a deficency in current DHT mechanisms to allow for spacial representation of hash locations. The intent is that meaning can be ascribed to locations in the DHT and facilitate more efficent function. Specifically in this example we seek to build a minimal latency overlay network for the DHT so a global scale DHT is viable and efficent. The naive method of doing so is to assign coordiants to servers based on embedding location of nodes on the planet earth. More complex appraches would be to approximate a minium latency space based on inter-node latency.
 
+
+\section{VHash}
+VHash was created to allow for spacial respresentations to be mapped to hash locations, a feature lacking in many current distributed hash tables.  In particular, we aimed to construct a mechanism for creating a more efficient global scale DHT built on a minimal latency overlay. Rather than focus on minimizing the amount of hops required to travel from point to point we wish to minimize the time required for a message to reach its recepient. VHash actually has a worse worst case hop distance ($O(n^{\frac{1}{d}})$) then other comparable Distributed Hash Tables ($O(lg(n))$) however VHash can route messages as quickly as possible rather than a grand tour an overlay network may describe in the real world.
+
+The naive method of doing so is to assign coordinates to servers based on embedding location of nodes. More complex approaches would approximate a minimum latency space based on inter-node latency. VHash can be considered  a generallized extension of VoroNet \cite{voronet}.
+
+%The intent is that meaning can be ascribed to locations in the DHT and facilitate more efficent function. 
+%Specifically in this example we seek to build a minimal latency overlay network for the DHT so a global scale DHT is viable and efficent. 
+
+
+\begin{algorithm}
+\caption{Vhash Maintence Cycle}
+\label{maintence}
+\begin{algorithmic}[0]  % the number is how many 
+	\STATE $P$ is the list of peers
+    
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Vhash Handle Maintence Message}
+\label{handelmaintence}
+\begin{algorithmic}[0]  % the number is how many 
+	\STATE hungry
+\end{algorithmic}
+\end{algorithm}
+
+
+I'm referencing algorithm \ref{lapel}
 
 \subsection{Mechanism}
-VHASH can be implemented in any arbitrary number of dimensions. The overlay space used by the DHT is comprised of a unit hypercube with toroidaly wapping edges. The toroidal property makes some visualization and mathmatical properties difficult but allows for a space without a sparse edge such that higher dimension graphs/spaces can be embeded with less error.
+VHash maps nodes to an overlay arbitrary $d$ dimension toroidal unit space. This is essentially a hypercube with wrapping edges. The toroidal property makes some visualization and mathmatical properties difficult \footnote{which one} but allows for a space without a sparse edge  \footnote{a picture here would help demonstrate this}.  The lack of a edge due to wrapping allows higher dimension spaces to be embedded with less error \footnote{I assume we prove this somewhere}.
 
-VHASH nodes are responsible for the address space defined by thier voronoi region. This region is definded by a list of peer nodes maintained by the node. A minium list of peers is maintained such that the node's voronoi region is well definded. The links defined by this set of peers are links on the graphs delunay triangulation. 
+VHash nodes are responsible for the address space defined by their Voronoi region. This region is definded by a list of peer nodes maintained by the node. A minimum list of peers is maintained such that the node's Voronoi region is well definded. The links connecting the node to its peers correspond to the links of a Delunay Triangulation. 
 
 \subsection{Relation to Voronoi Diagrams and Delunay Triangulation}
 
-Vhash does not strictly solve Voronoi diagrams \cite{voronoi}. The toroidal nature of the space precluids straightforward application of the mechanisms described here\cite{voronoi}. However the algorithim does approximate a graph with similar properties. Rather than attempt to calculate the voronoi region of each node, it simply filters locations assigning responsibility to the nearest node. An online algorithim maintains the set of peers which define the node's voronoi region. The set of peers required to define a node's voronoi region descibe a solution to the dual Delunay Triangulation.
-
-
+VHash does not strictly solve Voronoi diagrams \cite{voronoi}. The toroidal nature of the space preclude the traditional means of solving Voronoi regions. However, VHash's peer management approximates a graph with similar properties. 
+%Rather than attempt to calculate the Voronoi region of each node, it simply filters locations, assigning responsibility to the nearest node. 
+An online algorithim maintains the set of peers defining the node's voronoi region. The set of peers required to define a node's voronoi region descibe a solution to the dual Delunay Triangulation.\footnote{this seems to be a bit repitative}
 
 \subsection{Messages}
-Maintence and joining are handled by a simple periodic mechanism. A notification message consisting of a node's information and active peers is the only maintence message. All messages have a destination hash location which is used to route them to the proper server. This can be the hash location of a particular node or the location of a desired record or service which will be recived by the node responsible for the location. Services run on the DHT define thier own message contents.
+Maintence and joining are handled by a simple periodic mechanism. A notification message consisting of a node's information and active peers is the only maintence message. All messages have a destination hash location which is used to route them to the proper server. This destination can be the hash location of a particular node or the location of a desired record or service.  The message is recived by the node responsible for the location. Services running on the DHT define their own message contents.
 
 \subsection{Message Routing}
 Messages are routed over the overlay network using a simple algorithim. A node maintains a minimal list of peers to define it's own voronoi region.  From the perspective of the node, the entire voronoi region is defined only by its peers.
 
-When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amoungst the node and its peers. If the destinion falls within its own region then it is responsible and handles the message acordingly. The node otherwise forwards the message to the closest peer to the destination location. This process describes a pre-computed and cached A* \cite{astar} routing algorithim. A* offers $O(\log(n))$ hop routing.
-
-
-
+When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amoungst the node and its peers. If the destinion falls within its own region then it is responsible and handles the message acordingly. The node otherwise forwards the message to the closest peer to the destination location. This process describes a pre-computed and cached A* \cite{astar} routing algorithim.
 
 \subsection{Joining and Maintence}
-Joining is a straightforward process. A new node must know at least one member of the network to join. A joining node choses a location in the hash space as its owner location at random or based on a promblem forumulation (for example based on geographic location) and the joining node sends a maintence message to it's own location via the known node. The message is forwarded to the current owner of that location who can be considered a "parent" node. The parent node imediately replys with it's own maintence message containing it's full peer list. The new nodes final peers are a subset of the parent and the parents peers. The parent adds the new node to it's peer list and removes all occuluded nodes from the peer list. Then regular maintence propogates the new node's information and repairs the overlay topology.
+Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then choses a location in the hash space either at random or based on a promblem formulation (for example, based on geographic location or latency information).
 
-Maintence is a periodic process in which each node sends its peers a maintence message. The maintence message consists of a nodes information and the information of that nodes peers. When a maintence message is recived, the reciving node considers the listed nodes as canidates for its peer list and remove occluded nodes from thier own peer list. When messages to a peer fail it is assumed the peer has left the network. The leaving peer is removed from the peer list and canidates from the set of 2 hop peers provided by other peers move in to replace it.
+After choosing a location, the joining node sends a "join" message to its own location via the known node.
+The message is forwarded to the current owner of that location who can be considered a "parent" node.
+The parent node imediately replies with a maintenence message containing its full peer list. This message makes its way to the joining node, who then uses this to begin defining the space he is responsible for. 
 
-There is no protocol for polite exit from the network as it is unessisary. The DHT protocol assumes nodes will fail and the diference between an intended failure and unintended failure is unessisary. The only issue this causes is that software should be designed to fail totaly when issues arrise rather then attempt to fulfil only part of the protocol rather then to partialy fail and result poor coverage of the region for which it is responsible.
+The joining nodes final peers are a subset of the parent and the parent's peers. The parent adds the new node to it's peer list and removes all his peers occluded by the new node.  Then regular maintence propogates the new node's information and repairs the overlay topology.
 
-\subsection{Worst cases}
+Each node in the network performs maintenence periodically by sending nodes a maintenence message. The maintence message consists of the node's information and the information on that node's peer list. When a maintence message is recived, the reciving node considers the listed nodes as candidates for its own peer list and removes any occluded nodes from their own peer list. 
 
-Our worst case scenarios only occcur in contrived scenarios and are astronomically improbable assuming a random distribution of points.
+When messages sent to a peer fail, it is assumed the peer has left the network. The leaving peer is removed from the peer list and canidates from the set of 2-hop peers provided by other peers move in to replace it.
+
+There is no protocol for a "polite" exit from the network. The DHT protocol assumes nodes will fail and the diference between an intended failure and unintended failure is unecessary. The only issue this causes is that software should be designed to fail totaly when issues arrise rather then attempt to fulfil only part of the protocol rather then to partialy fail and result poor coverage of the region for which it is responsible.
+
+\subsection{Data Storage and Backups}
+Primary goal of a DHT is to provide a storage medium. We extend this idea such that work and information can be assigned to nodes using the same paradigm. Resources in the network, be they raw data or assigned tasks, are assigned hash locations. The node responsible for a given hash location is responsible for the maintence of that resource. When a node fails, its peers take responsibility of it's space, thus it is important to provide peers with frequent backups of a node's assigned resources, such that if a node fails, its peers can imideately assume its responsibilities.
+
+\subsubsection{Resource Storage}
+When a resource is to be stored on the network, it is assigned a hash location. The hash locations assigned could be random, a hash of an identifier, or have specifc meaning for an embeding problem. A message is send to the assigned hash location which contains the resource and the network forwards it to the responsible server, who then stores the resource in a local hash table based on its hash location.
+When a resource is to be retrived from the network, the retriver must know the hash location to which it was stored. A data request message is addressed to the hash location of the resource and is recived by the responsible node who replys with the requested resource or an error message should nothign be stored at that location. Some options are imediately aparent for dealing with wasted storage space: If usage of the system is temporary then accept the loss of efficency. If a system is primarily read driven, record the time or last read or a frequency of use such that resources that are unused are deleted. If a system is write driven, allow the resource to be assigned a time to live when it is written, which can be updated as needed.
+
+\subsection{Backups}
+At a frequency set by the node manager or at a frequency set by any adaptive process to optimize backup frequency, a node send a message containing backups of the resources for which it is newly responsible to each of its peers. To minimize bandwidth and time wasted by backups, the node should only send the records changed since last backup
+
+\subsection{Unaddressed Issues}
+A series of issues relevent to VHash are not addressed in this paper due to limiting of scope, space, time, and a lack of actual solutions to the problems: The exact method of caching to optimize lookup time under real world usage. The overlay network being mapped onto latency results in nodes whose failure due to natural disaster to be comorbid with it's neighbors resulting to data loss. Comorbidness could be counteracted by more complex backup schemes.
 
 \section{D$^{3}$NS}
 D$^{3}$NS has logically descrete components which provide DNS efficent record storage, Domain name ownership management and verification, DNS backwards compatitibility, all of which may be logically replaced or have individual optimizations. D$^{3}$NS uses a DHT to store DNS records in a distributed fashion, A blockchain and Namecoin\cite{namecoin} analog to manage domain name ownership.
@@ -181,7 +233,7 @@ As a result we chose to develop a prototype DHT to meet this requirement to act 
 
 
 \subsection{DNS frontend}
-Because this system is intended to be reverse compatible with the existing DNS protocol, we serve the data provided by the DHT after it has been authenticated by the block chain to other DNS servers or clients. DNS nodes incorporated into the DDDNS system will not request data from other DNS servers and will only exchange data via the DHT 
+Because this system is intended to be reverse compatible with the existing DNS protocol, we serve the data provided by the DHT after it has been authenticated by the block chain to other DNS servers or clients. DNS nodes incorporated into the D$^3$NS system will not request data from other DNS servers and will only exchange data via the DHT 
 
 \section{Implementation}
 Im not sure what to put here, this indicates it needs to be re-organized
