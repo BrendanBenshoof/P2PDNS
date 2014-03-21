@@ -90,7 +90,7 @@ Distributed Hash Tables are used as a tool to generate overlay networks for P2P 
 
 
 
-VHash was created to allow for spacial representations to be mapped to hash locations guided by previous work into object location embedding \citep{voronet}. Rather than focus on minimizing the amount of hops required to travel from point to point we wish to minimize the time required for a message to reach its recipient. VHash actually has a worse worst case hop distance ($O(\sqrt[d]{n})$) than other comparable distributed hash tables ($O(lg(n))$) \citep{chord}. However, VHash can route messages as quickly as possible rather than traveling over a grand tour that an overlay network may describe in the real world. In addition, Vhash offers routing with constant size memory, as average degree in a metric space is defined as a function of the number of dimensions (8 for a 2 dimensions). 
+VHash was created to allow for spacial representations to be mapped to hash locations guided by previous work into object location embedding \citep{voronet}. Rather than focus on minimizing the amount of hops required to travel from point to point we wish to minimize the time required for a message to reach its recipient. VHash actually has a worse worst case hop distance ($O(\sqrt[d]{n})$) than other comparable distributed hash tables ($O(lg(n))$) \citep{chord}. However, VHash can route messages as quickly as possible rather than traveling over a grand tour that an overlay network may describe in the real world.
 
 
 %The intent is that meaning can be ascribed to locations in the DHT and facilitate more efficent function. 
@@ -123,7 +123,7 @@ VHash nodes are responsible for the address space defined by their Voronoi regio
 \vspace{-45pt}
 \begin{algorithm}[H]
 
-\caption{Vhash Routing}
+\caption{VHash Routing}
 \label{routing}
 {\footnotesize
 \begin{algorithmic}[1]  % the number is how many 
@@ -150,16 +150,14 @@ VHash nodes are responsible for the address space defined by their Voronoi regio
 
 
 
-When routing a message to an arbitrary location, a node calculates who's Voronoi region the message's destination is within among the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, it forwards the message to the responsible peer and that peer attempts to route the message. This process mimics a pre-computed A* \citep{astar} routing algorithm over the network. 
+When routing a message to an arbitrary location, a node calculates who's Voronoi region the message's destination is within among itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, it forwards the message to the responsible peer and that peer attempts to route the message. This process mimics a pre-computed A* \citep{astar} routing algorithm over the network. 
 
-In terms of metric length, the average routing distance in Vhash is the width of the metric space. A standard DHT overlay is necessarily $O(lg(n))$ as the distance it takes for the DHT to route 1 hop is equivalent to the distance a Vhash message requires to reach the destination. 
+In terms of metric length, the average routing distance in VHash is the width of the metric space. This is superior to other DHTs because their topologies do not attempt to optimize for distances between nodes. A standard DHT overlay is necessarily $O(lg(n))$ times worse. The distance it takes for the DHT to route 1 hop is equivalent to the distance a VHash message requires to reach the destination. 
 
 \subsubsection*{Joining and Maintenance}
 Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then chooses a location in the hash space either at random or based on a problem formulation (such as geographic location or latency).
-
-
-After choosing a location, the joining node sends a "join" message to its own location via the known node.
-The message is forwarded to the current owner of that location, the "parent" node.
+After choosing a location, the joining node sends a ``join'' message to its own location via the known node.
+The message is forwarded to the current owner of that location, the ``parent'' node.
 The parent node replies with a maintenance message containing its full peer list. The joining node uses this to begin defining the space for which it is responsible. 
 The parent adds the new node to its own peer list and removes all his peers occluded by the new node.  Regular maintenance propagates the new node's information and repairs the overlay topology. 
 
@@ -194,7 +192,7 @@ The parent adds the new node to its own peer list and removes all his peers occl
   \end{wrapfigure}
 
 
-Each node in the network performs maintenance periodically by a maintenance message to its peers. The maintenance message consists of the node's information and the information on that node's peer list. When a maintenance message is received, the receiving node considers the listed nodes as candidates for its own peer list and removes any occluded nodes. 
+Each node in the network performs maintenance periodically via a maintenance message to its peers. The maintenance message consists of the node's information and the information on that node's peer list. When a maintenance message is received, the receiving node considers the listed nodes as candidates for its own peer list and removes any occluded nodes. 
 
 
 \subsubsection*{Data Storage}
@@ -203,7 +201,7 @@ Resources in the network, be it raw data or assigned tasks, are assigned hash lo
 A resource is accessed by contacting the node responsible for the resource.  However, the requester generally has no idea which node is responsible for any particular resource.  The data request message is addressed to the location corresponding to the resource, rather than the node responsible for that location.  The message is forwarded over the overlay network, each hop bringing the node closer until it reaches the responsible node, who sends the resource or an error if the resource does not exist.
 
 \subsubsection*{Conclusion} 
-Vhash presents a technique for creating a DHT which allows for efficient optimization of latency and throughput on a Peer to Peer network. It does so by minimizing real routing distance rather than the number of hops. It will facilitate new faster, more efficient DHT based systems.
+VHash presents a technique for creating a DHT which allows for efficient optimization of latency and throughput on a Peer-to-Peer network. It does so by minimizing real routing distance rather than the number of hops. It will facilitate new faster, more efficient DHT based systems.
   
   
 
