@@ -77,13 +77,7 @@
 \vspace*{-0.65in}
 \begin{abstract}
 %1. State the problem
-Distributed Hash Tables are used as a tool to generate overlay networks for P2P networks. Current DHT techniques are not designed to take the nature of the underlying network into account when organizing the overlay network. Current DHT networks assign nodes locations in a ring or tree, limiting the ability of these networks to be more efficiency.
-%2. Say why it’s an interesting problem
-A DHT technique that allows for efficient construction of an overlay network that takes into account the location of a joining node allows for higher performance P2P networks.
-%3. Say what your solution achieves
-We present VHASH as a spatial DHT based on approximate Delunay Triangulation to integrate location information of nodes into overlay network topology.
-%4. Say what follows from your solution
-VHASH allows for the creation of P2P networks with faster record look-up time, storage, and maintenance with a geographically diverse set of nodes.
+Distributed Hash Tables are used as a tool to generate overlay networks for P2P networks. Current DHT techniques are not designed to take the nature of the underlying network into account when organizing the overlay network; they assign nodes locations in a ring or tree, limiting the ability of these networks to be more efficient. We present VHASH as a spatial DHT based on approximate Delunay Triangulation to integrate location information of nodes into overlay network topology. VHASH allows for the creation of P2P networks with faster record look-up time, storage, and maintenance with a geographically diverse set of nodes.
 \end{abstract}
 
 
@@ -106,6 +100,8 @@ VHash nodes are responsible for the address space defined by their Voronoi regio
 
 \subsubsection*{Message Routing}
 When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amongst the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, it forwards the message to the responsible peer and that peer attempts to route the message. This process describes a pre-computed and cached A*\citep{astar} routing algorithm upon the network. 
+
+In terms of metric length, the routing distance in Vhash converges to length $O(\sqrt[d]{n})$ as the average distance between 2 nodes as the number of nodes approaches infinite. A standard DHT overlay is necessarily $O(lg(n))$ times worse because the average distance between each two nodes in it's hop is the average distance between any two nodes in the network. 
 
 \subsubsection*{Joining and Maintenance}
 Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then chooses a location in the hash space either at random or based on a problem formulation (for example, based on geographic location or latency information).
