@@ -9,7 +9,7 @@
 %   read geometry.pdf for detailed page layout information
 
 \usepackage{graphicx} % support the \includegraphics command and options
-\usepackage{savetrees}
+%\usepackage{savetrees}
 % \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
 
 %%% PACKAGES
@@ -99,6 +99,55 @@ VHash maps nodes to a $d$ dimension toroidal unit space overlay. This is essenti
 VHash nodes are responsible for the address space defined by their Voronoi region. This region is defined by a list of peer nodes maintained by the node. A minimum list of peers is maintained such that the node's Voronoi region is well defined. The links connecting the node to its peers correspond to the links of a Delaunay Triangulation.
 
 \subsubsection*{Message Routing}
+  \begin{wrapfigure}{l}{0.5\textwidth}
+    \begin{minipage}{0.5\textwidth}
+\begin{algorithm}[h]
+\footnotesize{
+\caption{Vhash Routing}
+\label{routing}
+\begin{algorithmic}[1]  % the number is how many 
+	\STATE $P_0$ is this node's set of peers
+    \STATE $N$ is this node
+	\STATE $m$ is a message addressed for $L$
+    \STATE $Forwards$ is the set $P_0\cup{}N$
+    \STATE find $C$: member of $Forwards$ which has the shortest distance to $L$
+    \IF{$C$ is $N$}
+    	\STATE $N$ is the responsible party.
+        \STATE Handle $m$
+    \ELSE
+    	\STATE Forward $m$ to $C$ for handling or further routing
+    \ENDIF
+\end{algorithmic}
+}
+\end{algorithm}
+    \end{minipage}
+  \end{wrapfigure}
+
+ \begin{wrapfigure}{r}{0.5\textwidth}
+    \begin{minipage}{0.5\textwidth}
+ \begin{algorithm}[h]
+\footnotesize{
+\caption{VHash Greedy Peer Selection}
+\label{peer}
+\begin{algorithmic}[1]  % the number is how many 
+	\STATE $Candiates$ is the set of candidate peers
+    \STATE $Peers$ is the set of this node's peers
+    \STATE $Canidates$ is sorted by each node's closeness to this node
+    \STATE The closest member of $Canidates$ is popped and added to $Peers$
+    \FORALL{$n$ in $Canidates$}
+    	\STATE $c$ is the midpoint between this node and $n$
+        \IF{Any node in $Peers$ is closer to $c$ than this node}
+        	\STATE reject $n$ as a peer
+        \ELSE
+        	\STATE Add $n$ to $Peers$
+        \ENDIF
+    \ENDFOR
+\end{algorithmic}
+}
+\end{algorithm}
+    \end{minipage}
+  \end{wrapfigure}
+
 When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amongst the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, it forwards the message to the responsible peer and that peer attempts to route the message. This process describes a pre-computed and cached A*\citep{astar} routing algorithm upon the network. 
 
 In terms of metric length, the routing distance in Vhash converges to length $O(\sqrt[d]{n})$ as the average distance between 2 nodes as the number of nodes approaches infinite. A standard DHT overlay is necessarily $O(lg(n))$ times worse because the average distance between each two nodes in it's hop is the average distance between any two nodes in the network. 
@@ -124,46 +173,11 @@ When a resource is to be stored on the network, it is assigned a hash location. 
 
 A resource is accessed by contacting the node responsible for the resource.  However, the requester generally has no idea which node is responsible for any particular resource.  The data request message is addressed to the location corresponding to the resource, rather than the node responsible for that location.  The message is forwarded over the overlay network, each hop bringing the node closer until it reaches the responsible node, who sends the resource or an error if the resource does not exist.
 
-\begin{algorithm}[H]
-\footnotesize{
-\caption{VHash Greedy Peer Selection}
-\label{peer}
-\begin{algorithmic}[1]  % the number is how many 
-	\STATE $Candiates$ is the set of candidate peers
-    \STATE $Peers$ is the set of this node's peers
-    \STATE $Canidates$ is sorted by each node's closeness to this node
-    \STATE The closest member of $Canidates$ is popped and added to $Peers$
-    \FORALL{$n$ in $Canidates$}
-    	\STATE $c$ is the midpoint between this node and $n$
-        \IF{Any node in $Peers$ is closer to $c$ than this node}
-        	\STATE reject $n$ as a peer
-        \ELSE
-        	\STATE Add $n$ to $Peers$
-        \ENDIF
-    \ENDFOR
-\end{algorithmic}
-}
-\end{algorithm}
+ 
 
-\begin{algorithm}[H]
-\footnotesize{
-\caption{Vhash Routing}
-\label{routing}
-\begin{algorithmic}[1]  % the number is how many 
-	\STATE $P_0$ is this node's set of peers
-    \STATE $N$ is this node
-	\STATE $m$ is a message addressed for $L$
-    \STATE $Forwards$ is the set $P_0\cup{}N$
-    \STATE find $C$: member of $Forwards$ which has the shortest distance to $L$
-    \IF{$C$ is $N$}
-    	\STATE $N$ is the responsible party.
-        \STATE Handle $m$
-    \ELSE
-    	\STATE Forward $m$ to $C$ for handling or further routing
-    \ENDIF
-\end{algorithmic}
-}
-\end{algorithm}
+  
+  
+
 
 {\footnotesize
 \bibliographystyle{plainnat}
