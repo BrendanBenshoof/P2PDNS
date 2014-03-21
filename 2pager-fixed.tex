@@ -95,9 +95,9 @@ VHash was created to allow for spacial representations to be mapped to hash loca
 
 
 \subsubsection*{Mechanism}
-VHash maps nodes to a $d$ dimension toroidal unit space overlay. This is essentially a hypercube with wrapping edges. The toroidal property makes visualization difficult but allows for a space without a sparse edge, as all nodes can translate the space such that they are at the center of the space.  In effect, each node views itself at the center of the graph.
+VHash maps nodes to a $d$ dimension toroidal unit space overlay. This is essentially a hypercube with wrapping edges. The toroidal property makes visualization difficult but allows for a space without a sparse edge, as all nodes can translate the space such that they are at the center of the space.  This is a helpful property in ensuring efficient routing to all other nodes.
 
-VHash nodes are responsible for the address space defined by their Voronoi region. This region is defined by a list of peer nodes maintained by the node. A minimum list of peers is maintained such that the node's Voronoi region is well defined. The links connecting the node to its peers correspond to the links of a Delaunay Triangulation.
+VHash nodes are responsible for the address space defined by their Voronoi region. This region is defined by a list of peers maintained by the node. A minimum list of peers is maintained such that the node's Voronoi region is well defined. The links connecting the node to its peers correspond to the links of a Delaunay Triangulation.
 
 \subsubsection*{Message Routing}
 
@@ -127,10 +127,9 @@ VHash nodes are responsible for the address space defined by their Voronoi regio
 \end{wrapfigure}
 
 
-  
-When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amongst the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, it forwards the message to the responsible peer and that peer attempts to route the message. This process describes a pre-computed and cached A*\citep{astar} routing algorithm upon the network. 
+When routing a message to an arbitrary location, a node calculates who's Voronoi region the message's destination is within among the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, it forwards the message to the responsible peer and that peer attempts to route the message. This process mimics a pre-computed A* \citep{astar} routing algorithm over the network. 
 
-In terms of metric length, the routing distance in Vhash converges to length $O(C^d)$  as the average distance between 2 nodes as the number of nodes approaches infinity. A standard DHT overlay is necessarily $O(lg(n))$ as the distance it takes for the DHT to route 1 hop is equivalent to the distance a Vhash message requires to reach the destination. 
+In terms of metric length, the routing distance in Vhash converges to length $O(C^d)$. A standard DHT overlay is necessarily $O(lg(n))$ as the distance it takes for the DHT to route 1 hop is equivalent to the distance a Vhash message requires to reach the destination. 
 
 \subsubsection*{Joining and Maintenance}
 Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then chooses a location in the hash space either at random or based on a problem formulation (such as geographic location or latency).
@@ -138,9 +137,8 @@ Joining the network is a straightforward process. A new node first learns the lo
 
 After choosing a location, the joining node sends a "join" message to its own location via the known node.
 The message is forwarded to the current owner of that location, the "parent" node.
-The parent node replies with a maintenance message containing its full peer list. The joining node uses this to begin defining the space it is responsible for. 
-
-The joining node's initial peers are a subset of the parent and the parent's peers. The parent adds the new node to its own peer list and removes all his peers occluded by the new node.  Regular maintenance propagates the new node's information and repairs the overlay topology. 
+The parent node replies with a maintenance message containing its full peer list. The joining node uses this to begin defining the space for which it is responsible. 
+The parent adds the new node to its own peer list and removes all his peers occluded by the new node.  Regular maintenance propagates the new node's information and repairs the overlay topology. 
 
 \begin{wrapfigure}{l}{0.5\textwidth}
 \begin{minipage}{0.5\textwidth}
@@ -175,8 +173,6 @@ Each node in the network performs maintenance periodically by a maintenance mess
 
 \subsubsection*{Data Storage}
 Resources in the network, be it raw data or assigned tasks, are assigned hash locations. The node responsible for a given hash location is responsible for the maintenance of that resource. When a node fails, its peers take responsibility of its space. Thus it is important to provide peers with frequent backups of a node's assigned resources.  That way, when a node fails, its peers can immediately assume its responsibilities.
-
-When a resource is to be stored on the network, it is assigned a hash location. The hash locations assigned could be random, a hash of an identifier, or have specific meaning for an embedding problem. The node responsible for that resource's hash location stores the resource.
 
 A resource is accessed by contacting the node responsible for the resource.  However, the requester generally has no idea which node is responsible for any particular resource.  The data request message is addressed to the location corresponding to the resource, rather than the node responsible for that location.  The message is forwarded over the overlay network, each hop bringing the node closer until it reaches the responsible node, who sends the resource or an error if the resource does not exist.
 
