@@ -104,11 +104,12 @@ When routing a message to an arbitrary location, a node calculates who's voronoi
 In terms of metric length, the routing distance in Vhash converges to length $O(\sqrt[d]{n})$ as the average distance between 2 nodes as the number of nodes approaches infinite. A standard DHT overlay is necessarily $O(lg(n))$ times worse because the average distance between each two nodes in it's hop is the average distance between any two nodes in the network. 
 
 \subsubsection*{Joining and Maintenance}
-Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then chooses a location in the hash space either at random or based on a problem formulation (for example, based on geographic location or latency information).
+Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then chooses a location in the hash space either at random or based on a problem formulation (such as geographic location or latency).
+
 
 After choosing a location, the joining node sends a "join" message to its own location via the known node.
-The message is forwarded to the current owner of that location who can be considered the "parent" node.
-The parent node immediately replies with a maintenance message containing its full peer list. This message is sent to the joining node, who then uses this to begin defining the space it is responsible for. 
+The message is forwarded to the current owner of that location, the "parent" node.
+The parent node replies with a maintenance message containing its full peer list. The joining node uses this to begin defining the space it is responsible for. 
 
 The joining node's initial peers are a subset of the parent and the parent's peers. The parent adds the new node to its own peer list and removes all his peers occluded by the new node.  Then regular maintenance propagates the new node's information and repairs the overlay topology. 
 
