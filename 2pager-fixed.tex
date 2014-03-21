@@ -61,7 +61,7 @@
 %%% The "real" document content comes below...
 \linespread{0.9}
 \title{VHASH: Spatial DHT based on Voronoi Tessellation}
-
+\author{}
 \date{} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
 
@@ -86,11 +86,29 @@ Distributed Hash Tables are used as a tool to generate overlay networks for P2P 
 
 %\end{IEEEkeywords}
 \subsubsection*{VHash}
+
+
+
 VHash was created to allow for spacial representations to be mapped to hash locations guided by previous work into object location embedding \citep{voronet}. Rather than focus on minimizing the amount of hops required to travel from point to point we wish to minimize the time required for a message to reach its recipient. VHash actually has a worse worst case hop distance ($O(\sqrt[d]{n})$) than other comparable distributed hash tables ($O(lg(n))$) \citep{chord}. However, VHash can route messages as quickly as possible rather than traveling over a grand tour that an overlay network may describe in the real world. In addition, Vhash offers routing with constant size memory, as average degree in a metric space is defined as a function of the number of dimensions (8 for a 2 dimensions). 
 
 
 %The intent is that meaning can be ascribed to locations in the DHT and facilitate more efficent function. 
 %Specifically in this example we seek to build a minimal latency overlay network for the DHT so a global scale DHT is viable and efficent. 
+
+\begin{wrapfigure}{l}{0.5\textwidth}
+\begin{minipage}{0.5\textwidth}
+
+\begin{figure}[H]
+\vspace{-20pt}
+    \includegraphics[width=\linewidth]{voronoi-churn4}
+\vspace{-20pt}
+    \caption
+{
+Here, a new node is joining the networks and has established that his position falls in the the yellow shaded Voronoi region.}
+\vspace{-20pt}
+\end{figure}
+    \end{minipage}
+  \end{wrapfigure}
 
 
 
@@ -104,7 +122,9 @@ VHash nodes are responsible for the address space defined by their Voronoi regio
 
 \begin{wrapfigure}{l}{0.5\textwidth}
 \begin{minipage}{0.5\textwidth}
+\vspace{-40pt}
 \begin{algorithm}[H]
+
 \caption{Vhash Routing}
 \label{routing}
 {\footnotesize
@@ -123,6 +143,7 @@ VHash nodes are responsible for the address space defined by their Voronoi regio
 \end{algorithmic}
 }
 \end{algorithm}
+\vspace{-55pt}
 \end{minipage}
 \end{wrapfigure}
 
@@ -140,10 +161,12 @@ The message is forwarded to the current owner of that location, the "parent" nod
 The parent node replies with a maintenance message containing its full peer list. The joining node uses this to begin defining the space for which it is responsible. 
 The parent adds the new node to its own peer list and removes all his peers occluded by the new node.  Regular maintenance propagates the new node's information and repairs the overlay topology. 
 
-\begin{wrapfigure}{l}{0.5\textwidth}
-\begin{minipage}{0.5\textwidth}
-\begin{algorithm}[H]
 
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{minipage}{0.5\textwidth}
+\vspace{-20pt}
+\begin{algorithm}[H]
 \caption{VHash Greedy Peer Selection}
 \label{peer}
 {\footnotesize
@@ -164,6 +187,7 @@ The parent adds the new node to its own peer list and removes all his peers occl
 \end{algorithmic}
 }
 \end{algorithm}
+\vspace{-40pt}
     \end{minipage}
   \end{wrapfigure}
 
@@ -180,7 +204,7 @@ A resource is accessed by contacting the node responsible for the resource.  How
 
   
   
-
+\vspace{-15pt}
 
 {\footnotesize
 \bibliographystyle{plainnat}
