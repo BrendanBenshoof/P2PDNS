@@ -1,61 +1,80 @@
-% !TEX TS-program = pdflatex
-% !TEX encoding = UTF-8 Unicode
+\documentclass{article}
 
-% This is a simple template for a LaTeX document using the "article" class.
-% See "book", "report", "letter" for other types of document.
 
-\documentclass[10pt]{article}
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{letterpaper} % or letterpaper (US) or a5paper or....
+% \geometry{margins=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
 
-\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
-\usepackage{geometry}
-\geometry{letterpaper}
-%%% Examples of Article customizations
-% These packages are optional, depending whether you want the features they provide.
-% See the LaTeX Companion or other references for full information.
-
-\usepackage{savetrees}
-\usepackage{titlesec}
 \usepackage{graphicx} % support the \includegraphics command and options
-\usepackage[round]{natbib}
-
+\usepackage{savetrees}
 % \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
 
 %%% PACKAGES
-\usepackage{url}
+\usepackage[round]{natbib}
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+%\usepackage{listings}
+%\usepackage[scaled]{beramono}
+%\usepackage[T1]{fontenc}
+\usepackage{xcolor}
 \usepackage{booktabs} % for much better looking tables
 \usepackage{array} % for better arrays (eg matrices) in maths
 \usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
 \usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
 \usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+\usepackage{wrapfig}
 \usepackage{algorithm} 
 \usepackage{algorithmic}
 
+\usepackage{titlesec}
+\titleformat{\subsubsection}[runin]{\normalfont\bfseries}{\thesubsection.}{3pt}{}
+
+
 % These packages are all incorporated in the memoir class to one degree or another...
+%\usepackage{algorithm}
+%\usepackage{algpseudocode}
+%\usepackage{amsmath}
+%\usepackage{amsthm}
 
 %%% HEADERS & FOOTERS
 %\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
 %\pagestyle{fancy} % options: empty , plain , fancy
-%\renewcommand{\headrulewidth}{0pt} % customise the layout...
+%%\renewcommand{\headrulewidth}{0pt} % customise the layout...
 %\lhead{}\chead{}\rhead{}
 %\lfoot{}\cfoot{\thepage}\rfoot{}
 
-\titleformat{\subsubsection}[runin]{\normalfont\bfseries}{\thesubsection.}{3pt}{}
+%%% SECTION TITLE APPEARANCE
+%\usepackage{sectsty}
+%\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+%\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+%\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+%\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+%\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
 
 %%% END Article customizations
 
-
-
 %%% The "real" document content comes below...
-
+\linespread{0.95}
 \title{VHASH: Spatial DHT based on Voronoi Tessellation}
-\author{}
-%\author{Brendan Benshoof \qquad Andrew Rosen  \\Department of Computer Science, Georgia State University\\  bbenshoof@cs.gsu.edu \qquad rosen@cs.gsu.edu }
+
 \date{} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
 
-\begin{document}
-\maketitle
 
+\hyphenation{op-tical net-works semi-conduc-tor Chord-Reduce Map-Reduce Data-Nodes Name-Nodes}
+%\KEYWORD{MapReduce; P2P; Parallel Processing; Peer-to-Peer Computing; Cloud Computing; Middleware;}
+\begin{document}
+%\lstset{language=Python, basicstyle= \footnotesize\ttfamily ,showstringspaces=false, frame=single, commentstyle=\itshape\color{gray}, identifierstyle=\color{black},  keywordstyle=\bfseries\color{red!40!black}, stringstyle=\color{blue}} 
+
+
+
+\maketitle
+\vspace*{-0.65in}
 \begin{abstract}
 %1. State the problem
 Distributed Hash Tables are used as a tool to generate overlay networks for P2P networks. Current DHT techniques are not designed to take the nature of the underlying network into account when organizing the overlay network. Current DHT networks assign nodes locations in a ring or tree, limiting the ability of these networks to be more efficiency.
@@ -67,6 +86,11 @@ We present VHASH as a spatial DHT based on approximate Delunay Triangulation to 
 VHASH allows for the creation of P2P networks with faster record look-up time, storage, and maintenance with a geographically diverse set of nodes.
 \end{abstract}
 
+
+%\begin{IEEEkeywords}
+%MapReduce; P2P; Parallel Processing; Peer-to-Peer Computing; Cloud Computing; Middleware;
+
+%\end{IEEEkeywords}
 \subsubsection*{VHash}
 VHash was created to allow for spacial representations to be mapped to hash locations guided by previous work into location object embedding\citep{voronet}. Rather than focus on minimizing the amount of hops required to travel from point to point we wish to minimize the time required for a message to reach its recipient. VHash actually has a worse worst case hop distance ($O(\sqrt[d]{n})$) than other comparable distributed hash tables ($O(lg(n))$)\citep{chord}. However, VHash can route messages as quickly as possible rather than traveling over a grand tour that an overlay network may describe in the real world.
 
@@ -143,10 +167,9 @@ A resource is accessed by contacting the node responsible for the resource.  How
 \end{algorithmic}
 }
 \end{algorithm}
-\footnotesize{
 
+{\footnotesize
 \bibliographystyle{plainnat}
 \bibliography{P3DNS}
 }
-
 \end{document}
