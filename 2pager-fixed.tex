@@ -59,7 +59,7 @@
 %%% END Article customizations
 
 %%% The "real" document content comes below...
-\linespread{0.95}
+\linespread{0.9}
 \title{VHASH: Spatial DHT based on Voronoi Tessellation}
 
 \date{} % Activate to display a given date or no date (if empty),
@@ -99,12 +99,14 @@ VHash maps nodes to a $d$ dimension toroidal unit space overlay. This is essenti
 VHash nodes are responsible for the address space defined by their Voronoi region. This region is defined by a list of peer nodes maintained by the node. A minimum list of peers is maintained such that the node's Voronoi region is well defined. The links connecting the node to its peers correspond to the links of a Delaunay Triangulation.
 
 \subsubsection*{Message Routing}
-  \begin{wrapfigure}{l}{0.5\textwidth}
-    \begin{minipage}{0.5\textwidth}
-\begin{algorithm}[h]
-\footnotesize{
+
+
+\begin{wrapfigure}{l}{0.5\textwidth}
+\begin{minipage}{0.5\textwidth}
+\begin{algorithm}[H]
 \caption{Vhash Routing}
 \label{routing}
+{\footnotesize
 \begin{algorithmic}[1]  % the number is how many 
 	\STATE $P_0$ is this node's set of peers
     \STATE $N$ is this node
@@ -120,15 +122,33 @@ VHash nodes are responsible for the address space defined by their Voronoi regio
 \end{algorithmic}
 }
 \end{algorithm}
-    \end{minipage}
-  \end{wrapfigure}
+\end{minipage}
+\end{wrapfigure}
 
- \begin{wrapfigure}{r}{0.5\textwidth}
-    \begin{minipage}{0.5\textwidth}
- \begin{algorithm}[h]
-\footnotesize{
+
+  
+When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amongst the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, it forwards the message to the responsible peer and that peer attempts to route the message. This process describes a pre-computed and cached A*\citep{astar} routing algorithm upon the network. 
+
+In terms of metric length, the routing distance in Vhash converges to length $O(\sqrt[d]{n})$ as the average distance between 2 nodes as the number of nodes approaches infinite. A standard DHT overlay is necessarily $O(lg(n))$ times worse because the average distance between each two nodes in it's hop is the average distance between any two nodes in the network. 
+
+\subsubsection*{Joining and Maintenance}
+Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then chooses a location in the hash space either at random or based on a problem formulation (such as geographic location or latency).
+
+
+After choosing a location, the joining node sends a "join" message to its own location via the known node.
+The message is forwarded to the current owner of that location, the "parent" node.
+The parent node replies with a maintenance message containing its full peer list. The joining node uses this to begin defining the space it is responsible for. 
+
+The joining node's initial peers are a subset of the parent and the parent's peers. The parent adds the new node to its own peer list and removes all his peers occluded by the new node.  Regular maintenance propagates the new node's information and repairs the overlay topology. 
+
+\begin{wrapfigure}{l}{0.5\textwidth}
+\begin{minipage}{0.5\textwidth}
+\begin{algorithm}[H]
+
 \caption{VHash Greedy Peer Selection}
 \label{peer}
+{\footnotesize
+
 \begin{algorithmic}[1]  % the number is how many 
 	\STATE $Candiates$ is the set of candidate peers
     \STATE $Peers$ is the set of this node's peers
@@ -147,20 +167,6 @@ VHash nodes are responsible for the address space defined by their Voronoi regio
 \end{algorithm}
     \end{minipage}
   \end{wrapfigure}
-
-When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amongst the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, it forwards the message to the responsible peer and that peer attempts to route the message. This process describes a pre-computed and cached A*\citep{astar} routing algorithm upon the network. 
-
-In terms of metric length, the routing distance in Vhash converges to length $O(\sqrt[d]{n})$ as the average distance between 2 nodes as the number of nodes approaches infinite. A standard DHT overlay is necessarily $O(lg(n))$ times worse because the average distance between each two nodes in it's hop is the average distance between any two nodes in the network. 
-
-\subsubsection*{Joining and Maintenance}
-Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then chooses a location in the hash space either at random or based on a problem formulation (such as geographic location or latency).
-
-
-After choosing a location, the joining node sends a "join" message to its own location via the known node.
-The message is forwarded to the current owner of that location, the "parent" node.
-The parent node replies with a maintenance message containing its full peer list. The joining node uses this to begin defining the space it is responsible for. 
-
-The joining node's initial peers are a subset of the parent and the parent's peers. The parent adds the new node to its own peer list and removes all his peers occluded by the new node.  Then regular maintenance propagates the new node's information and repairs the overlay topology. 
 
 
 Each node in the network performs maintenance periodically by a maintenance message to its peers. The maintenance message consists of the node's information and the information on that node's peer list. When a maintenance message is received, the receiving node considers the listed nodes as candidates for its own peer list and removes any occluded nodes. 
