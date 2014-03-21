@@ -28,7 +28,8 @@
 \usepackage{algorithm} 
 \usepackage{algorithmic}
 
-\usepackage{titlesec}
+\usepackage[font={footnotesize}]{caption}
+\usepackage[compact]{titlesec}
 \titleformat{\subsubsection}[runin]{\normalfont\bfseries}{\thesubsection.}{3pt}{}
 
 
@@ -57,7 +58,7 @@
 %\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
 
 %%% END Article customizations
-
+\raggedbottom
 %%% The "real" document content comes below...
 \linespread{0.9}
 \title{VHASH: Spatial DHT based on Voronoi Tessellation}
@@ -74,7 +75,7 @@
 
 
 \maketitle
-\vspace*{-0.55in}
+\vspace*{-0.6in}
 \begin{abstract}
 %1. State the problem
 Distributed Hash Tables are used as a tool to generate overlay networks for P2P networks. Current DHT techniques are not designed to take the nature of the underlying network into account when organizing the overlay network; they assign nodes locations in a ring or tree, limiting the ability of these networks to be more efficient. We present VHASH as a spatial DHT based on approximate Delunay Triangulation to integrate location information of nodes into overlay network topology. VHASH allows for the creation of P2P networks with faster record look-up time, storage, and maintenance with a geographically diverse set of nodes.
@@ -99,13 +100,12 @@ VHash was created to allow for spacial representations to be mapped to hash loca
 \begin{minipage}{0.5\textwidth}
 
 \begin{figure}[H]
-\vspace{-20pt}
+\vspace{-30pt}
     \includegraphics[width=\linewidth]{voronoi-churn4}
-\vspace{-20pt}
+
     \caption
 {
 Here, a new node is joining the networks and has established that his position falls in the the yellow shaded Voronoi region.}
-\vspace{-20pt}
 \end{figure}
     \end{minipage}
   \end{wrapfigure}
@@ -117,12 +117,10 @@ VHash maps nodes to a $d$ dimension toroidal unit space overlay. This is essenti
 
 VHash nodes are responsible for the address space defined by their Voronoi region. This region is defined by a list of peers maintained by the node. A minimum list of peers is maintained such that the node's Voronoi region is well defined. The links connecting the node to its peers correspond to the links of a Delaunay Triangulation.
 
-\subsubsection*{Message Routing}
-
 
 \begin{wrapfigure}{l}{0.5\textwidth}
 \begin{minipage}{0.5\textwidth}
-\vspace{-40pt}
+\vspace{-45pt}
 \begin{algorithm}[H]
 
 \caption{Vhash Routing}
@@ -143,14 +141,18 @@ VHash nodes are responsible for the address space defined by their Voronoi regio
 \end{algorithmic}
 }
 \end{algorithm}
-\vspace{-55pt}
+
 \end{minipage}
 \end{wrapfigure}
+\subsubsection*{Message Routing}
+
+
+
 
 
 When routing a message to an arbitrary location, a node calculates who's Voronoi region the message's destination is within among the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, it forwards the message to the responsible peer and that peer attempts to route the message. This process mimics a pre-computed A* \citep{astar} routing algorithm over the network. 
 
-In terms of metric length, the routing distance in Vhash converges to length $O(C^d)$. A standard DHT overlay is necessarily $O(lg(n))$ as the distance it takes for the DHT to route 1 hop is equivalent to the distance a Vhash message requires to reach the destination. 
+In terms of metric length, the average routing distance in Vhash is the width of the metric space. A standard DHT overlay is necessarily $O(lg(n))$ as the distance it takes for the DHT to route 1 hop is equivalent to the distance a Vhash message requires to reach the destination. 
 
 \subsubsection*{Joining and Maintenance}
 Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then chooses a location in the hash space either at random or based on a problem formulation (such as geographic location or latency).
@@ -165,7 +167,7 @@ The parent adds the new node to its own peer list and removes all his peers occl
 
 \begin{wrapfigure}{r}{0.5\textwidth}
 \begin{minipage}{0.5\textwidth}
-\vspace{-20pt}
+\vspace{-25pt}
 \begin{algorithm}[H]
 \caption{VHash Greedy Peer Selection}
 \label{peer}
@@ -187,7 +189,7 @@ The parent adds the new node to its own peer list and removes all his peers occl
 \end{algorithmic}
 }
 \end{algorithm}
-\vspace{-40pt}
+\vspace{-30pt}
     \end{minipage}
   \end{wrapfigure}
 
@@ -200,11 +202,11 @@ Resources in the network, be it raw data or assigned tasks, are assigned hash lo
 
 A resource is accessed by contacting the node responsible for the resource.  However, the requester generally has no idea which node is responsible for any particular resource.  The data request message is addressed to the location corresponding to the resource, rather than the node responsible for that location.  The message is forwarded over the overlay network, each hop bringing the node closer until it reaches the responsible node, who sends the resource or an error if the resource does not exist.
 
- 
+\subsubsection*{Conclusion} 
+Vhash presents a technique for creating a DHT which allows for efficient optimization of latency and throughput on a Peer to Peer network. It does so by minimizing real routing distance rather than the number of hops. It will facilitate new faster, more efficient DHT based systems.
+  
+  
 
-  
-  
-\vspace{-15pt}
 
 {\footnotesize
 \bibliographystyle{plainnat}
