@@ -87,22 +87,22 @@ There have been many explorations and attempts \cite{cox} \cite{pappas} \cite{ra
 
 This paper proposes the Distributed Decentralized Domain Name Service, or D$^{3}$NS.  D$^{3}$NS is a completely decentralized Domain Name Service operating over a DHT.  D$^{3}$NS does not replace the DNS protocol, but rather adds robustness to the architecture as a whole.  Internally, D$^3$NS signs all DNS records using public/private keys, providing additional security internal to the DNS system.
 
-We show that D$^{3}$NS addresses the objections to a decentralized DNS system posed by Cox et al \cite{cox}, specifically: dramatically reducing latency compared to other DHT systems, retaining the extensibility of the original DNS system, and changing the intended scope of use to address incentive issues. We show D$^{3}$NS allows for new authentication methods and a means of decentralized proof of ownership beyond that of Cox et al's work. 
+We show that D$^{3}$NS addresses the objections to a decentralized DNS system posed by Cox \textit{et al}. \cite{cox}, specifically: dramatically reducing latency compared to other DHT systems, retaining the extensibility of the original DNS system, and changing the intended scope of use to address incentive issues. We show D$^{3}$NS allows for new authentication methods and a means of decentralized proof of ownership beyond that of Cox \textit{et al}.'s work. 
 
 
-The rest of the paper is consists of the following sections.  Section II gives an overview of DNS and identifies prior research in the area of distributed DNS.  Section III defines the various components of D$^3$NS.  Section IV covers the modified blockchain used for record authentication in D$^3$NS.  Section V presents VHash, a DHT that we designed for D$^3$NS.  Section VI details our implementation of D$^3$NS and  we discuss our conclusions and future work in Section VIII.
+The rest of the paper is consists of the following sections.  Section II gives an overview of DNS and identifies prior research in the area of distributed DNS.  Section III defines the various components of D$^3$NS.  Section IV covers the modified blockchain used for record authentication in D$^3$NS.  Section V presents UrDHT \cite{urdht}, a DHT that we designed and used with D$^3$NS.  Section VI details our implementation of D$^3$NS and  we discuss our conclusions and future work in Section VIII.
 
 
 \section{Background}
 
-This paper is intended to address concerns raised by Cox et al \cite{cox} and propose a viable decentralized DNS replacement utilizing a DHT. Our proposed improvements on the DNS alternative presented by Cox et al are fully reverse compatible with the current hierarchical DNS system and provides a shared, authenticated public record that allows for DNSSEC style authentication.
+This paper is intended to address concerns raised by Cox \textit{et al}. \cite{cox} and propose a viable decentralized DNS replacement utilizing a DHT. Our proposed improvements on the DNS alternative presented by Cox \textit{et al}. are fully reverse compatible with the current hierarchical DNS system and provides a shared, authenticated public record that allows for DNSSEC style authentication.
 
 \subsection{DNS Overview}
 
 DNS queries proceed recursively through the DNS hierarchy, beginning with a query to a root server, which then yields a record for a server for the requested top level domain.  This server then directs the request to another DNS server responsible for the domain under that, which yields an answer or another DNS server, which is queried in the same manner.
 
 One of the key concepts of the DNS architecture is that no matter which servers end up being queried, a user can expect to receive a record consistent with what the rest of the DNS system will serve for that particular request.
-\
+
 Multiple recent legislative motions reflect DNS's weakness to be influenced by local government intervention \cite{sopa} \cite{lemley2011don} \cite{crocker2011security}.
 
 These bills would have required that servers maintained in the US filter specified domain names, preventing users from obtaining the correct IP address for the domain name in question. Multiple governments have been noted to preform systematic attacks on DNS queries \cite{inject}. This filtering is incompatable with the DNS Security Extensions (DNSSEC) \cite{crocker2011security} and DNS's intended usage. 
@@ -111,12 +111,12 @@ The mandated DNS filtering would possibly drive users to unregulated DNS servers
 
 
 \subsection{Related Work}
-Cox et al devised a distributed DNS using Chord \cite{chord} as the storage medium for DNS records, which they called Distributed DNS (DDNS). They examined the possibility of extending DNSSEC with new options for storing keys in the DHT. They encountered the then unsolved problem of proof-of-ownership \cite{bitcoin} for domain names and found no means of enhancing security. 
+Cox \textit{et al}. devised a distributed DNS using Chord \cite{chord} as the storage medium for DNS records, which they called Distributed DNS (DDNS). They examined the possibility of extending DNSSEC with new options for storing keys in the DHT. They encountered the then unsolved problem of proof-of-ownership \cite{bitcoin} for domain names and found no means of enhancing security. 
 
 They noted that the overlay topology of a DHT such as Chord did not take into account latency optimization and thus DNS was not a viable application of a DHT due to significantly greater latency. They also pointed out several possible improvements as a result of using a DHT, namely increased robustness, an auto-balancing structure, resistance to both DDOS attacks and packet injection based DNS spoofing.
 
 
-Cox et al considered the optimization and security problems solvable, but they postulated that two issues rendered the system unviable. First, they intended that DDNS would replace all DNS servers and traffic, which removed extensibility and customizability of the original DNS protocol. Second, because they considered replacing the entire DNS system rather than a meaningful subset, they presented a question of incentive. What incentivized companies to support the new system where their servers had to share the load of other companies traffic?  What would stop them from holding only their content, while rejecting any additional responsibility assigned to it?
+Cox \textit{et al}. considered the optimization and security problems solvable, but they postulated that two issues rendered the system unviable. First, they intended that DDNS would replace all DNS servers and traffic, which removed extensibility and customizability of the original DNS protocol. Second, because they considered replacing the entire DNS system rather than a meaningful subset, they presented a question of incentive. What incentivized companies to support the new system where their servers had to share the load of other companies traffic?  What would stop them from holding only their content, while rejecting any additional responsibility assigned to it?
  
  
 D$^3$NS addresses both of the raised issues. We utilize a side channel method of confirming domain named ownership via a blockchain \cite{namecoin} to enable DNSSEC style security at all layers of the network. We propose a DHT structure which allows for minimum latency optimization. Our system aims only to replace authoritative Top Level Domain servers currently managed by registrars, where most records are simpley a forward to an authoritative DNS server managed by the domain owner, rather than replacing all levels of DNS. This limiting of scope allows us to continue to take advantage of DNS extensions and as places responsibility of managing the network with those who have an incentive for its continued functioning.
@@ -481,7 +481,7 @@ Using all of these components together allowed us to create a system with the fo
 	\item Decentralization - Both the DHT and Blockchain can operate without the support of any controlling organization, this offers security against corruption and abuse. 
 \end{itemize}	
 
-D$^3$NS successfully addresses the challenges laid down by Cox et al \cite{cox}  in regards to designing a DNS replacement running over a DHT.   We encourage criticism, revision, and adoption of this new system.
+D$^3$NS successfully addresses the challenges laid down by Cox \textit{et al}. \cite{cox}  in regards to designing a DNS replacement running over a DHT.   We encourage criticism, revision, and adoption of this new system.
 
 \subsection{Unaddressed Issues and Future Work}
 The Blockchain does not solve all security issues relevant to DNS authentication and security. Exit nodes could lie or have packets inject to clients until the protocol from DNS server to client is improved. The DHT structure opens up unexplored disruption attacks on the overlay topology.
