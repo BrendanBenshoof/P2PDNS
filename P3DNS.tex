@@ -27,7 +27,7 @@
 \usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
 \usepackage{algorithm} 
 \usepackage{algorithmic}
-\usepackage[firstpage]{draftwatermark}
+%\usepackage[firstpage]{draftwatermark}
 
 
 % These packages are all incorporated in the memoir class to one degree or another...
@@ -45,7 +45,7 @@
 
 \title{Distributed Decentralized Domain Name Service}
 \author{
-Brendan Benshoof \qquad Andrew Rosen  \\Department of Computer Science, Georgia State University\\ 34 Peachtree St NW \\ Atlanta, Georgia 30303\\  bbenshoof@cs.gsu.edu \qquad rosen@cs.gsu.edu }
+Brendan Benshoof \qquad Andrew Rosen  \\Department of Computer Science, Georgia State University\\ 25 Park Place\\ Atlanta, Georgia 30303\\  bbenshoof@cs.gsu.edu \qquad rosen@cs.gsu.edu }
 %\date{} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
 
@@ -82,7 +82,7 @@ More recent are the leaks of classified information elucidating the extent of th
 These types of threats to DNS, along with security concerns, were not considered when designing the protocol, but DNS is too widely used and too integrated with the Internet as a whole to be replaced. Extensions such as DNSSEC \cite{blacka2013clarifications} add authentication and data integrity, but do not alter the fundamental architecture of the DNS network.
 
 
-There have been many explorations and attempts \cite{cox} \cite{pappas} \cite{ramasubramanian2004design} to propose a DNS system based on a distributed hash table (DHT) cite{chord}. We extend on those papers by implementing a DHT which minimizes latency distance rather than hop distance and implementing a shared record of ownership based on recent developments in cryptocurrency \cite{namecoin} \cite{bitcoin}.
+There have been many explorations and attempts \cite{cox} \cite{pappas} \cite{ramasubramanian2004design} to propose a DNS system based on a distributed hash table (DHT) \cite{chord}. We extend on those papers by implementing a DHT which minimizes latency distance rather than hop distance and implementing a shared record of ownership based on recent developments in cryptocurrency \cite{namecoin} \cite{bitcoin}.
 
 
 This paper proposes the Distributed Decentralized Domain Name Service, or D$^{3}$NS.  D$^{3}$NS is a completely decentralized Domain Name Service operating over a DHT.  D$^{3}$NS does not replace the DNS protocol, but rather adds robustness to the architecture as a whole.  Internally, D$^3$NS signs all DNS records using public/private keys, providing additional security internal to the DNS system.
@@ -103,9 +103,9 @@ DNS queries proceed recursively through the DNS hierarchy, beginning with a quer
 
 One of the key concepts of the DNS architecture is that no matter which servers end up being queried, a user can expect to receive a record consistent with what the rest of the DNS system will serve for that particular request.
 
-Multiple recent legislative motions reflect DNS's weakness to be influenced by local government intervention \cite{sopa} \cite{lemley2011don} \cite{crocker2011security}.
+Recent legislative motions reflect DNS's weakness to be influenced by local government intervention \cite{sopa} \cite{lemley2011don} \cite{crocker2011security}.
 
-These bills would have required that servers maintained in the US filter specified domain names, preventing users from obtaining the correct IP address for the domain name in question. Multiple governments have been noted to preform systematic attacks on DNS queries \cite{inject}. This filtering is incompatable with the DNS Security Extensions (DNSSEC) \cite{crocker2011security} and DNS's intended usage. 
+These bills would have required that servers maintained in the US filter specified domain names, preventing users from obtaining the correct IP address for the domain name in question. Multiple governments have been noted to preform systematic attacks on DNS queries \cite{inject}. This filtering is incompatible with the DNS Security Extensions (DNSSEC) \cite{crocker2011security} and DNS's intended usage. 
 
 The mandated DNS filtering would possibly drive users to unregulated DNS servers, which would create more attack vectors.
 
@@ -116,25 +116,36 @@ Cox \textit{et al}. devised a distributed DNS using Chord \cite{chord} as the st
 They noted that the overlay topology of a DHT such as Chord did not take into account latency optimization and thus DNS was not a viable application of a DHT due to significantly greater latency. They also pointed out several possible improvements as a result of using a DHT, namely increased robustness, an auto-balancing structure, resistance to both DDOS attacks and packet injection based DNS spoofing.
 
 
-Cox \textit{et al}. considered the optimization and security problems solvable, but they postulated that two issues rendered the system unviable. First, they intended that DDNS would replace all DNS servers and traffic, which removed extensibility and customizability of the original DNS protocol. Second, because they considered replacing the entire DNS system rather than a meaningful subset, they presented a question of incentive. What incentivized companies to support the new system where their servers had to share the load of other companies traffic?  What would stop them from holding only their content, while rejecting any additional responsibility assigned to it?
+Cox \textit{et al}. considered the optimization and security problems solvable, but they postulated that two issues rendered the system unviable. First, they intended that DDNS would replace all DNS servers and traffic, which removed extensibility and customizability of the original DNS protocol. Second, because they considered replacing the entire DNS system rather than a meaningful subset, they presented a question of incentive. What would incentivize companies to support the new system where their servers had to share the load of other companies traffic?  What would stop them from holding only their content, while rejecting any additional responsibility assigned to it?
  
  
-D$^3$NS addresses both of the raised issues. We utilize a side channel method of confirming domain named ownership via a blockchain \cite{namecoin} to enable DNSSEC style security at all layers of the network. We propose a DHT structure which allows for minimum latency optimization. Our system aims only to replace authoritative Top Level Domain servers currently managed by registrars, where most records are simpley a forward to an authoritative DNS server managed by the domain owner, rather than replacing all levels of DNS. This limiting of scope allows us to continue to take advantage of DNS extensions and as places responsibility of managing the network with those who have an incentive for its continued functioning.
+D$^3$NS addresses both of the raised issues. 
+We utilize a side channel method of confirming domain named ownership via a blockchain \cite{namecoin} to enable DNSSEC style security at all layers of the network. 
+We propose a DHT structure which allows for minimum latency optimization. 
+Our system aims only to replace authoritative Top Level Domain servers currently managed by registrars, where most records are simply a forward to an authoritative DNS server managed by the domain owner, rather than replacing all levels of DNS. 
+This limiting of scope allows us to continue to take advantage of DNS extensions and as places responsibility of managing the network with those who have an incentive for its continued functioning.
 
 
 
 \section{D$^{3}$NS}
-D$^{3}$NS has logically discrete components which provide DNS efficient record storage, domain name ownership management and verification, and DNS backwards compatitibility, all of which may be modularly replaced or have individual optimizations. D$^{3}$NS uses a DHT to store DNS records in a distributed fashion and a blockchain and Namecoin\cite{namecoin} analog to manage domain name ownership.  D$^{3}$NS utilizes public and private key encryption for signing and verifying records.
+D$^{3}$NS has logically discrete components which provide DNS efficient record storage, domain name ownership management and verification, and DNS backwards compatibility, all of which may be modularly replaced or have individual optimizations. 
+D$^{3}$NS uses a DHT to store DNS records in a distributed fashion and a blockchain and Namecoin \cite{namecoin} analog to manage domain name ownership.  
+D$^{3}$NS utilizes public and private key encryption for signing and verifying records.
 
 
 \subsection{Distributed Hash Table}
-Our implementation is not strictly specific to any particular distributed hash table.  We examined using Chord \cite{chord} with DNS, similar to DDNS \cite{cox}.  However, Chord’s unidirectional ring overlay topology does not take actual network topology into account and using it for a global scale system is not viable because messages will be routed very inefficiently. D$^3$NS requires a DHT which allows the routing overlay to be optimized to the network topology and conditions in real time.
-
-As a result we chose to develop a prototype DHT to meet this requirement to act as backend to our DNS system called Vhash. Vhash is built on the idea of an "overlay space" which is a $d$-dimensional unit cube which wraps around the edges in a toroidal fashion. Each record in the DHT is assigned a location in that space. Each node is assigned a location and is responsible for records to which it is the closest node. The variable dimensionality is allowed so that problems can be embedded into the space with relative ease and records can be assigned locations which have meaning concerning the problem in which they are a part. This way, records that are close to each other in the problem formulation are close to each other in the DHT and are likely hosted on the same node. This offers speedup for many distributed algorithms which require traversal of data.
+Our implementation is not strictly specific to any particular distributed hash table.  We examined using Chord \cite{chord} with DNS, similar to DDNS \cite{cox}.  However, Chord's unidirectional ring overlay topology does not take actual network topology into account and using it for a global scale system is not viable because messages will be routed very inefficiently. D$^3$NS requires a DHT which allows the routing overlay to be optimized to the network topology and conditions in real time.
 
 
+As a result we chose to develop a prototype DHT to meet this requirement to act as backend to our DNS system called Vhash. 
+Vhash is built on the idea of an "overlay space" which is a $d$-dimensional unit cube which wraps around the edges in a toroidal fashion.
+Each record in the DHT is assigned a location in that space. Each node is assigned a location and is responsible for records to which it is the closest node. 
+The variable dimensionality is allowed so that problems can be embedded into the space with relative ease and records can be assigned locations which have meaning concerning the problem in which they are a part. 
+This way, records that are close to each other in the problem formulation are close to each other in the DHT and are likely hosted on the same node. 
+This offers speedup for many distributed algorithms which require traversal of data.
 
-\subsection{DNS frontend}
+
+\subsection{DNS Frontend}
 Because this system is intended to be reverse compatible with the existing DNS protocol, we serve the data provided by the DHT after it has been authenticated by the block chain to other DNS servers or clients. DNS nodes incorporated into the D$^3$NS system will not request data from other DNS servers and will only exchange data via the DHT.
 
 
@@ -149,20 +160,20 @@ Here we are particularly concerned with Bitcoin's blockchain. Bitcoin's blockcha
 \begin{figure}
     \includegraphics[width=\linewidth]{blockchain}
     \caption{A section of the blockchain as defined by Bitcoin \cite{bitcoin}.}
-    \label{blockchain}
+    \label{fig:blockchain}
 \end{figure}
 
 
-Bitcoin's blockchain is essentially a shared ledger.  The blockchain (Figure \ref{blockchain}) is a record of every single transaction made using the Bitcoin. Each transaction refers to  a previous transaction, indicating the funds handled by the new transaction are in fact owned by the user initiating the transaction. The record is validated by traversing the tree of transactions and marking the referenced transactions as used. A valid blockchain has all non-leaf node transactions marked as used only once.
+Bitcoin's blockchain is essentially a shared ledger.  The blockchain (Figure \ref{fig:blockchain}) is a record of every single transaction made using the Bitcoin. Each transaction refers to  a previous transaction, indicating the funds handled by the new transaction are in fact owned by the user initiating the transaction. The record is validated by traversing the tree of transactions and marking the referenced transactions as used. A valid blockchain has all non-leaf node transactions marked as used only once.
 
 
-Transactions are grouped together and verified in a \emph{block}, which are linked together in a chain.  Each block in the chain is a series of transactions published during the time it takes to generate that block. The process of authenticating these transactions and generating a new block is called mining (Algorithm \ref{mining}).  Mining a block is analogous to the concept of gold mining, as the incentive for successfully mining a block is a large sum of new bitcoins.  
+Transactions are grouped together and verified in a \emph{block}, which are linked together in a chain.  Each block in the chain is a series of transactions published during the time it takes to generate that block. The process of authenticating these transactions and generating a new block is called mining (Algorithm \ref{alg:mining}).  Mining a block is analogous to the concept of gold mining, as the incentive for successfully mining a block is a large sum of new bitcoins.  
 
 A block is mined by generating a nonce field such that the hash of the entire block is less than a global difficulty value. This difficulty sets the rate at which new blocks are mined and is adjusted in reference to rate of mining \footnote{Bitcoin adjusts the difficulty rate every 2016 blocks, such that the network will then mine a block every ten minutes on average \cite{bitdiff}}.  When a block is mined, it is transmitted to the network and each transaction in it is validated by each peer. The network will then work on mining the next block.
 
 \begin{algorithm}
 \caption{Blockchain mining}
-\label{mining}
+\label{alg:mining}
 \begin{algorithmic}[1]  % the number is how many 
 \STATE Given previous Block $B_{-1}$
 \STATE Given New Transaction Set $T$
@@ -184,7 +195,7 @@ We utilize the transaction record of Bitcoin to record ownership of domain names
 
 \begin{algorithm}
 \caption{Blockchain Transaction Validation}
-\label{validation}
+\label{alg:validation}
 \begin{algorithmic}[1]  % the number is how many 
 \STATE A new transaction $t$ consists of: Award domain $D$ to user $U$ with proof reference $P$ and signature $S$
 \STATE The transaction set $T$ is the set of all transactions considered valid
@@ -209,7 +220,7 @@ We utilize the transaction record of Bitcoin to record ownership of domain names
 \end{algorithm}
 
 The transactions in each block indicate miners claiming a new domain or the transfer of domain ownership. Claims of new domains are validated by a reference to an unclaimed mining reward owned by the claiming user. Transfers are validated by a pointer to an unused previous transfer record or claim record indicating ownership by the transferring party. This way every domain name in the system can be associated with the owner's public key. New domains can be claimed and old domains can be transfered between owners.
-Algorithm \ref{validation} shows the process for validating transactions using the blockchain.
+Algorithm \ref{alg:validation} shows the process for validating transactions using the blockchain.
 
 
 
@@ -225,11 +236,19 @@ Internally, members of the DHT are also members of the blockchain network (as it
 
 
 
-\section{VHash}
-VHash was created to allow for spacial representations to be mapped to hash locations, a feature lacking in many current distributed hash tables.  In particular, we aimed to construct a mechanism for creating a more efficient global scale DHT built on a minimal latency overlay. Rather than focus on minimizing the amount of hops required to travel from point to point we wish to minimize the time required for a message to reach its recipient. VHash actually has a worse worst case hop distance ($O(\sqrt[d]{n})$) than other comparable distributed hash tables ($O(lg(n))$). However, VHash can route messages as quickly as possible rather than traveling over a grand tour that an overlay network may describe in the real world.
+\section{UrDHT}
+%VHash was created to allow for spacial representations to be mapped to hash locations, a feature lacking in many current distributed hash tables.  In particular, we aimed to construct a mechanism for creating a more efficient global scale DHT built on a minimal latency overlay. Rather than focus on minimizing the amount of hops required to travel from point to point we wish to minimize the time required for a message to reach its recipient. VHash actually has a worse worst case hop distance ($O(\sqrt[d]{n})$) than other comparable distributed hash tables ($O(lg(n))$). However, VHash can route messages as quickly as possible rather than traveling over a grand tour that an overlay network may describe in the real world.
 
-The naive method of doing so is to assign coordinates to servers based on the geographic location of nodes. More complex approaches would approximate a minimum latency space based on inter-node latency. VHash can be considered  a generalized extension of VoroNet \cite{voronet}.  %Why is Voronet not okay and why is VHash
-Algorithm \ref{latency} describes the process for performing a minimum latency embedding using VHash.
+One of the reasons we created UrDHT \cite{urdht} was to allow for spacial representations to be mapped to hash locations, a feature lacking in many current distributed hash tables.  
+In particular, we aimed to construct a mechanism for creating a more efficient global scale DHT built on a minimal latency overlay. 
+Rather than focus on minimizing the amount of hops required to travel from point to point we wish to minimize the time required for a message to reach its recipient. 
+UrDHT actually has a worse worst-case hop distance ($O(\sqrt[d]{n})$) than other comparable distributed hash tables ($O(lg(n))$). 
+However, UrDHT can route messages as quickly as possible rather than traveling over a grand tour that an overlay network may describe in the real world.
+
+
+
+The naive method of doing so is to assign coordinates to servers based on the geographic location of nodes. More complex approaches would approximate a minimum latency space based on inter-node latency.
+Algorithm \ref{alg:latency} describes the process for performing a minimum latency embedding using UrDHT
 
 %The intent is that meaning can be ascribed to locations in the DHT and facilitate more efficent function. 
 %Specifically in this example we seek to build a minimal latency overlay network for the DHT so a global scale DHT is viable and efficent. 
@@ -242,8 +261,8 @@ Algorithm \ref{latency} describes the process for performing a minimum latency e
 
 
 \begin{algorithm}
-\caption{Vhash Minimum Latency Embedding}
-\label{latency}
+\caption{UrDHT Minimum Latency Embedding}
+\label{alg:latency}
 \begin{algorithmic}[1]  % the number is how many 
 	\STATE $d$ is the dimensions of the hash space
     \STATE seed the space with $d+1$ nodes at random locations
@@ -267,33 +286,39 @@ Given two vector locations $\vec{a}$ and $\vec{b}$ on a  $d$ dimensional unit to
 \[ distance = \sqrt[|d|]{\sum\limits_{i\in d} (\min(|\vec{a}_i-\vec{b}_i|,1.0-|\vec{a}_i-\vec{b}_i|))^2}\]
 
 \subsection{Mechanism}
-VHash maps nodes to a $d$ dimension toroidal unit space overlay. This is essentially a hypercube with wrapping edges. The toroidal property makes visualization difficult but allows for a space without a sparse edge, as all nodes can translate the space such that they are at the center of the space.  In effect, each node views itself at the center of the graph.
+UrDHT maps nodes to a $d$ dimension toroidal unit space overlay. This is essentially a hypercube with wrapping edges. The toroidal property makes visualization difficult but allows for a space without a sparse edge, as all nodes can translate the space such that they are at the center of the space.  In effect, each node views itself at the center of the graph.
 
-VHash nodes are responsible for the address space defined by their Voronoi region. This region is defined by a list of peer nodes maintained by the node. A minimum list of peers is maintained such that the node's Voronoi region is well defined. The links connecting the node to its peers correspond to the links of a Delaunay Triangulation.  One such possible network is shown on Figure \ref{churninit}.
+Nodes in UrDHT are responsible for the address space defined by their Voronoi region. This region is defined by a list of peers maintained by the node. A minimum list of peers is maintained such that the node's Voronoi region is well defined. The links connecting the node to its peers correspond to the links of a Delaunay Triangulation.  One such possible network is shown on Figure \ref{fig:churninit}.
 
 
 \begin{figure}
     \includegraphics[width=\linewidth]{voronoi-churn2}
     \caption{The starting network topology.  The blue lines demark the Voronoi edges, while the red lines connecting the nodes correspond to the Delaunay Triangulation edges and one-hop connections.}
-    \label{churninit}
+    \label{fig:churninit}
 \end{figure}
 
 \subsection{Relation to Voronoi Diagrams and Delaunay Triangulation}
 
-VHash does not strictly solve Voronoi diagrams \cite{voronoi}, as the toroidal nature of the space preclude the traditional means of solving for Voronoi regions. However, VHash's peer management approximates a topology with similar properties. 
+UrDHT does not strictly solve Voronoi diagrams \cite{voronoi} for a number of reasons. 
+DHTs are completed decentralized, with no single node having global knowledge of the topology.
+Many of the algorithms to compute Delaunay Triangulation and/or Voronoi Tessellation are unsuited to a distributed environment.
+In addition, the computational cost increases when we move into spaces with greater than two dimensions.
+In general, finding the Delaunay Triangulation of $n$ points in a space with $d$ dimensions takes $O(n^{\frac{2d-1}{d}})$ time \cite{watson1981computing}.
+ 
+UrDHT uses the Distributed Greedy Voronoi Heuristic \cite{dgvh}, to create an approximation of Voronoi tessellation and Del. 
 %Rather than attempt to calculate the Voronoi region of each node, it simply filters locations, assigning responsibility to the nearest node. 
-An online algorithm (Algorithm \ref{peer} maintains the set of peers defining the node's voronoi region. The set of peers required to define a node's Voronoi Region corresponds to a solution to the dual Delaunay Triangulation.
+An online algorithm (Algorithm \ref{alg:dgvh} maintains the set of peers defining the node's Voronoi region. The set of peers required to define a node's Voronoi Region corresponds to a solution to the dual Delaunay Triangulation.
 
 
 
 \begin{algorithm}
-\caption{VHash Greedy Peer Selection}
-\label{peer}
+\caption{DGVH Greedy Peer Selection}
+\label{alg:dgvh}
 \begin{algorithmic}[1]  % the number is how many 
-	\STATE $Candiates$ is the set of candidate peers
+	\STATE $Candidates$ is the set of candidate peers
     \STATE $Peers$ is the set of this node's peers
-    \STATE $Canidates$ is sorted by each node's closeness to this node
-    \STATE The closest member of $Canidates$ is popped and added to $Peers$
+    \STATE $Candidates$ is sorted by each node's distance to this node
+    \STATE The closest member of $Candidates$ is popped and added to $Peers$
     \FORALL{$n$ in $Canidates$}
     	\STATE $c$ is the midpoint between this node and $n$
         \IF{Any node in $Peers$ is closer to $c$ than this node}
@@ -310,12 +335,12 @@ An online algorithm (Algorithm \ref{peer} maintains the set of peers defining th
 Maintenance and joining are handled by a simple periodic mechanism. A notification message consisting of a node's information and active peers is the only maintenance message. All messages have a destination hash location which is used to route them to the proper server. This destination can be the hash location of a particular node or the location of a desired record or service.  The message is received by the node responsible for the location. Services running on the DHT define their own message contents, such as commands to store and retrieve data.
 
 \subsection{Message Routing}
-Messages are routed over the overlay network using a simple algorithm ( Algorithm \ref{routing}). 
-When routing a message to an arbitrary location, a node calculates who's voronoi region the message's destination is in amongst the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, the node forwards the message to the closest peer to the destination location. This process describes a pre-computed and cached A* routing  algorithm \cite{astar} . 
+Messages are routed over the overlay network using a simple algorithm ( Algorithm \ref{alg:routing}). 
+When routing a message to an arbitrary location, a node calculates which Voronoi region the message's destination is in amongst the itself and its peers. If the destination falls within its own region, then it is responsible and handles the message accordingly. Otherwise, the node forwards the message to the closest peer to the destination location. This process describes a precomputed and cached A* routing  algorithm \cite{astar} . 
 
 \begin{algorithm}
-\caption{Vhash Routing}
-\label{routing}
+\caption{Routing}
+\label{alg:routing}
 \begin{algorithmic}[1]  % the number is how many 
 	\STATE $P_0$ is this node's set of peers
     \STATE $N$ is this node
@@ -334,15 +359,16 @@ When routing a message to an arbitrary location, a node calculates who's voronoi
 \subsection{Joining and Maintenance}
 Joining the network is a straightforward process. A new node first learns the location of at least one member of the network to join. The joining node then choses a location in the hash space either at random or based on a problem formulation (for example, based on geographic location or latency information).
 
-After choosing a location, the joining node sends a "join" message to its own location via the known node.
-The message is forwarded to the current owner of that location who can be considered the "parent" node.
-The parent node immediately replies with a maintenance message containing its full peer list. This message is sent to the joining node, who then uses this to begin defining the space it is responsible for. 
+After choosing a location, the joining node sends a \textit{join} message to its own location via the known node.
+The message is forwarded to the current owner of that location who can be considered the ``parent'' node.
+The parent node immediately replies with a maintenance message containing its full peer list. 
+This message is sent to the joining node, who then uses this to begin defining the space it is responsible for. 
 
-The joining node's initial peers are a subset of the parent and the parent's peers. The parent adds the new node to its own peer list and removes all his peers occluded by the new node.  Then regular maintenance propagates the new node's information and repairs the overlay topology.  This process is described by Algorithm \ref{join}.
+The joining node's initial peers are a subset of the parent and the parent's peers. The parent adds the new node to its own peer list and removes all his peers occluded by the new node.  Then regular maintenance propagates the new node's information and repairs the overlay topology.  This process is described by Algorithm \ref{alg:join}.
 
 \begin{algorithm}
-\caption{Vhash Join}
-\label{join}
+\caption{Join}
+\label{alg:join}
 \begin{algorithmic}[1]  % the number is how many 
 \STATE new node $N$ wishes to join and has location $L$
 \STATE $N$ knows node $x$ to be a member of the network
@@ -356,16 +382,16 @@ The joining node's initial peers are a subset of the parent and the parent's pee
 \end{algorithm}
 
 
-Each node in the network performs maintenance periodically by a maintenance message to its peers. The maintenance message consists of the node's information and the information on that node's peer list. When a maintenance message is received, the receiving node considers the listed nodes as candidates for its own peer list and removes any occluded nodes (Algorithm \ref{peer}). 
+Each node in the network performs maintenance periodically by a maintenance message to its peers. The maintenance message consists of the node's information and the information on that node's peer list. When a maintenance message is received, the receiving node considers the listed nodes as candidates for its own peer list and removes any occluded nodes (Algorithm \ref{alg:dgvh}). 
 
 
 
 
-When messages sent to a peer fail, it is assumed the peer has left the network. The leaving peer is removed from the peer list and candidates from the set of 2-hop peers provided by other peers move in to replace it.  Maintenance is described by Algorithms \ref{maint} and \ref{handlemaint}.  Figures \ref{churnjoin}, \ref{churndone}, and \ref{churndrop} illustrate the joining processing.
+When messages sent to a peer fail, it is assumed the peer has left the network. The leaving peer is removed from the peer list and candidates from the set of 2-hop peers provided by other peers move in to replace it.  Maintenance is described by Algorithms \ref{alg:maint} and \ref{alg:handlemaint}.  Figures \ref{fig:churnjoin}, \ref{fig:churndone}, and \ref{fig:churndrop} illustrate the joining processing.
 
 \begin{algorithm}
-\caption{VHash Maintenance Cycle}
-\label{maint}
+\caption{Maintenance Cycle}
+\label{alg:maint}
 \begin{algorithmic}[1]  % the number is how many 
 	\STATE $P_0$ is this node's set of peers
     \STATE $T$ is the maintenance period
@@ -380,8 +406,8 @@ When messages sent to a peer fail, it is assumed the peer has left the network. 
 
 
 \begin{algorithm}
-\caption{VHash Handle Maintenance Message}
-\label{handlemaint}
+\caption{Handle Maintenance Message}
+\label{alg:handlemaint}
 \begin{algorithmic}[1]  % the number is how many 
 	\STATE $P_0$ is this node's set of peers
 	\STATE Receive a Maintenance Message from peer $n$ containing its set of peers:$P_n$
@@ -402,7 +428,7 @@ When messages sent to a peer fail, it is assumed the peer has left the network. 
 
 
 
-There is no function for a "polite" exit from the network. VHash  assumes nodes will fail and the difference between an intended failure and unintended failure is unnecessary. The only issue this causes is that node software should be designed to fail totally when issues arise rather then attempt to fulfill only part of its responsibilities.  
+There is no function for a ``polite'' exit from the network. UrDHT assumes nodes will fail and the difference between an intended failure and unintended failure is unnecessary. The only issue this causes is that node software should be designed to fail totally when issues arise rather then attempt to fulfill only part of its responsibilities.  
 
 
 
@@ -411,20 +437,20 @@ There is no function for a "polite" exit from the network. VHash  assumes nodes 
 \begin{figure}
     \includegraphics[width=\linewidth]{voronoi-churn4}
     \caption{Here, a new node is joining the networks and has established that his position falls in the the yellow shaded Voronoi region.}
-    \label{churnjoin}
+    \label{fig:churnjoin}
 \end{figure}
 
 
 \begin{figure}
     \includegraphics[width=\linewidth]{voronoi-example}
     \caption{The network topology after the new node has finished joining.}
-    \label{churndone}
+    \label{fig:churndone}
 \end{figure}
 
 \begin{figure}
     \includegraphics[width=\linewidth]{voronoi-churn1}
-    \caption{The topology immediately after the new node leaves the network. After maintenance takes place, the topology repairs itself back to the configuration shown in Figure \ref{churninit}.}
-    \label{churndrop}
+    \caption{The topology immediately after the new node leaves the network. After maintenance takes place, the topology repairs itself back to the configuration shown in Figure \ref{fig:churninit}.}
+    \label{fig:churndrop}
 \end{figure}
 
 
@@ -486,7 +512,7 @@ D$^3$NS successfully addresses the challenges laid down by Cox \textit{et al}. \
 \subsection{Unaddressed Issues and Future Work}
 The Blockchain does not solve all security issues relevant to DNS authentication and security. Exit nodes could lie or have packets inject to clients until the protocol from DNS server to client is improved. The DHT structure opens up unexplored disruption attacks on the overlay topology.
 
-A series of issues relevant to VHash are not addressed in this paper due to limiting of scope, space, time, and a lack of actual solutions to the problems: The exact method of caching to optimize lookup time under real world usage. The overlay network being mapped onto latency results in nodes whose failure due to natural disaster to be comorbid with it's neighbors resulting to data loss. Comorbidity could be counteracted by more complex backup schemes.
+A series of issues relevant to UrDHT are not addressed in this paper due to limiting of scope, space, time, and a lack of actual solutions to the problems: The exact method of caching to optimize lookup time under real world usage. The overlay network being mapped onto latency results in nodes whose failure due to natural disaster to be comorbid with it's neighbors resulting to data loss. Comorbidity could be counteracted by more complex backup schemes.
 
 Future work will explore various solutions to theses issues, as well as generalized improvements to D$^3$NS as whole.  In particular, the technique of allying a DHT value store for real-time data and a Blockchain for ownership verification may prove a viable technique for decentralizing other web services and enabling new shared storage and computation mediums.
 
