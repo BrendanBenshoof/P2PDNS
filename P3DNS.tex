@@ -45,7 +45,7 @@
 
 \title{Distributed Decentralized Domain Name Service}
 \author{
-Brendan Benshoof \qquad Andrew Rosen  \\Department of Computer Science, Georgia State University\\ 25 Park Place\\ Atlanta, Georgia 30303\\  bbenshoof@cs.gsu.edu \qquad rosen@cs.gsu.edu }
+Brendan Benshoof \qquad Andrew Rosen  \qquad Anu G. Bourgeois \qquad Robert W. Harrison \\Department of Computer Science, Georgia State University\\ 25 Park Place\\ Atlanta, Georgia 30303\\  bbenshoof@cs.gsu.edu \qquad rosen@cs.gsu.edu  \qquad anu@cs.gsu.edu   \qquad rharrison@cs.gsu.edu }
 %\date{} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
 
@@ -137,9 +137,15 @@ D$^{3}$NS utilizes public and private key encryption for signing and verifying r
 Our implementation is not strictly specific to any particular distributed hash table.  We examined using Chord \cite{chord} with DNS, similar to DDNS \cite{cox}.  However, Chord's unidirectional ring overlay topology does not take actual network topology into account and using it for a global scale system is not viable because messages will be routed very inefficiently. D$^3$NS requires a DHT which allows the routing overlay to be optimized to the network topology and conditions in real time.
 
 
-As a result we chose to develop a prototype DHT to meet this requirement to act as backend to our DNS system called Vhash. 
-Vhash is built on the idea of an "overlay space" which is a $d$-dimensional unit cube which wraps around the edges in a toroidal fashion.
-Each record in the DHT is assigned a location in that space. Each node is assigned a location and is responsible for records to which it is the closest node. 
+As a result we chose to develop a prototype DHT to meet this requirement to act as backend to our DNS system called UrDHT \cite{urdht}. 
+UrDHT is built on the idea of constructing the DHTs overlay by using Voronoi Tessellations and Delaunay Triangulation . 
+Essentially, each node is at the center of Voronoi region and responsible for the records that fall in that region.
+The peers the node connects with correspond to the node's Delaunay neighbors. 
+Because UrDHT works with the high level abstractions of Voronoi Tessellation and Delaunay Triangulation, UrDHT can  easily be configured to work in any arbitrary metric space or imitate the overlay topology of any DHT, such as Chord.
+
+For D$^{3}$NS, UrDHT uses a $d$-dimensional unit cube which wraps around the edges in a toroidal fashion as the space for the overlay.
+Each record in the DHT is assigned a location in that space. 
+Each node is assigned a location and is responsible for records to which it is the closest node.
 The variable dimensionality is allowed so that problems can be embedded into the space with relative ease and records can be assigned locations which have meaning concerning the problem in which they are a part. 
 This way, records that are close to each other in the problem formulation are close to each other in the DHT and are likely hosted on the same node. 
 This offers speedup for many distributed algorithms which require traversal of data.
