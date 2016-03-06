@@ -138,9 +138,9 @@ Our implementation is not strictly specific to any particular distributed hash t
 
 
 As a result we chose to develop a prototype DHT to meet this requirement to act as backend to our DNS system called UrDHT \cite{urdht}. 
-UrDHT is built on the idea of constructing the DHTs overlay by using Voronoi Tessellations and Delaunay Triangulation . 
+UrDHT is built on the idea of constructing the DHTs overlay by using Voronoi Tessellations and Delaunay Triangulation. 
 Essentially, each node is at the center of Voronoi region and responsible for the records that fall in that region.
-The peers the node connects with correspond to the node's Delaunay neighbors. 
+The peers the node connects with correspond to that node's Delaunay neighbors. 
 Because UrDHT works with the high level abstractions of Voronoi Tessellation and Delaunay Triangulation, UrDHT can  easily be configured to work in any arbitrary metric space or imitate the overlay topology of any DHT, such as Chord.
 
 For D$^{3}$NS, UrDHT uses a $d$-dimensional unit cube which wraps around the edges in a toroidal fashion as the space for the overlay.
