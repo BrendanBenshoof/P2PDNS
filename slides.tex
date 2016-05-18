@@ -164,9 +164,19 @@ Distributed Decentralized Domain Name Service
 \end{frame}
 
 
+\begin{frame}{Cool Thing UrDHT Can Do}
+	\begin{itemize}
+		\item Embed problem spaces into DHT topology
+		\item Minimal latency based routing
+		\item Basically turns routing into A*
+		
+	\end{itemize}
+\end{frame}
+
 
 \subsection{Blockchain}
 \begin{frame}{Blockchain}
+% Cuttable
 	\begin{itemize}
 		\item Based on the blockchain verification of Bitcoin
 		\item Allows for a shared, immutable and secure public records
@@ -175,6 +185,19 @@ Distributed Decentralized Domain Name Service
 		\item  Blocks require a proof of work to authenticate, causing records to be produced at a semi-fixed rate.
 	\end{itemize}
 \end{frame}
+
+\begin{frame}{Blockchain}
+	\begin{itemize}
+		\item Using a technique similar to bitcoin, we can assign domain names as reward for mining new blocks and transfer domains between owners.
+		
+		\item An `owner' in this context is a public key
+		
+		\item These public keys can be used to verify stored DNS records by their signature
+		records to be produced at a semi-fixed rate.
+	\end{itemize}
+\end{frame}
+
+
 
 
 \begin{frame}
@@ -188,8 +211,46 @@ Distributed Decentralized Domain Name Service
 \end{frame}
 
 
-\section{Security}
-\subsection{Man in the Middle}
+\subsection{Frontend}
+\begin{frame}{PowerDNS}
+\begin{itemize}
+	\item Well established authoritative DNS server software.
+	
+	\item Provides easy interface for custom applications.
+	
+\end{itemize}
+\end{frame}
+
+\section{Summary}
+
+\subsection{Big Picture}
+
+\begin{frame}{Current DNS}
+
+	\begin{itemize}
+		\item ICANN is the final arbiter on who owns what domain
+		\item ICANN maintains and organizes the TLD authoritative name servers
+		\item Third party verifiers act to authenticate DNS records
+	
+	\end{itemize}
+
+
+\end{frame}
+
+
+
+\begin{frame}{P2P-Based DNS}
+
+	\begin{itemize}
+		\item The shared block chain is the final arbiter of who owns what
+		\item The DHT organizes and maintains the authoritative TLD servers
+		\item The block chain acts to authenticate DNS records
+	\end{itemize}
+
+
+\end{frame}
+
+\subsection{Security}
 
 \begin{frame}{Man in the Middle In a DHT}
 
@@ -232,6 +293,26 @@ Distributed Decentralized Domain Name Service
 
 \end{frame}
 
+
+\subsection{Conclusion}
+\begin{frame}{Conclusions}
+	\begin{itemize}
+		\item 	Proof of concept of a decentralized and distributed top-level DNS.
+		\item Fully reverse compatible.
+		\item Offers greater security.
+		\item Any organization can create their own secure verification server.
+		
+	\end{itemize}
+\end{frame}
+
+
+
+\section*{Appendix}
+\begin{frame}{How Does This Differ From Namecoin?}
+	\begin{itemize}
+		\item Transparent to end users.
+	\end{itemize}
+\end{frame}
 
 
 \end{document}
