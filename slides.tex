@@ -52,8 +52,8 @@ Brendan Benshoof \qquad Andrew Rosen \\ \qquad Anu G. Bourgeois \qquad Robert W.
 Distributed Decentralized Domain Name Service
 
 \begin{itemize}
-	\item The goal is to create a secure distributed DNS. 
-	\item Requirements 
+	\item The goal is to create a secure distributed DNS 
+	\item Requirements:
 	\begin{itemize}
 		\item Decentralization
 		\item Authentication
@@ -70,22 +70,26 @@ Distributed Decentralized Domain Name Service
 
 
 \note[itemize]{
-\item Authenticate records in a distributed system.
+\item Authenticate records in a distributed system
 \item Backwards compatable with the current system
 \item Transparent to the user
 }
 
 \begin{frame}{Motivation}
 	\begin{itemize}
-		\item  Recent events have demonstrated that centralized authorities are not as secure a previously hoped.
+		\item  Recent events have demonstrated that centralized authorities are not as secure a previously hoped
 		\begin{itemize}
-			\item There is little cryptographic protection against the subpoena.
-			\item Poorly constructed laws targeting DNS.
-			\item %One sentence summary of SOPA PIPA
+			\item There is little cryptographic protection against the subpoena
+			\item Poorly constructed laws targeting DNS
+			\item SOPA and PIPA would have resulted in DNS blocking and compromised security
 		\end{itemize}	
-		\item  A distributed approach for authentication is much less vulnerable.
-	
+		\item  A distributed approach for authentication is much less vulnerable	
 	\end{itemize}
+	
+	\begin{center}
+\includegraphics[width=0.4\linewidth]{figs/seized}
+\end{center}
+
 \end{frame}
 
 \note{Two interchangble parts 
@@ -117,7 +121,13 @@ Distributed Decentralized Domain Name Service
 
 
 \begin{frame}{Related Work}
-	Cox et al
+	Cox \textit{et al.}\footnote{Cox \textit{et al.}, ``Serving DNS using a Peer-to-Peer Lookup Service'' in \textit{Peer-to-Peer Systems}, pp. 155-165, Springer, 2002 } developed DDNS:
+	\begin{itemize}
+		\item Fault tolerant, load-balancing, and scalable
+		\item Easier to administer
+		\item Found higher latencies in a P2P-based DNS
+		\item Incentive problem --  why store records for others?
+	\end{itemize}
 \end{frame}
 
 \subsection{Big Picture}
@@ -128,6 +138,9 @@ Distributed Decentralized Domain Name Service
 		\item ICANN maintains and organizes the TLD authoritative name servers
 		\item Third party verifiers act to authenticate DNS records
 	\end{itemize}
+
+
+Insert DNS image
 \end{frame}
 
 
@@ -182,7 +195,10 @@ Distributed Decentralized Domain Name Service
 		\item  Facilitates one-to-one communication and one-to-many communication
 	\end{itemize}
 
-	Insert DHT Figure here
+	\begin{center}
+\includegraphics[width=0.4\linewidth]{figs/CR_overlay}
+\end{center}
+
 
 \end{frame}
 %
@@ -207,12 +223,14 @@ Distributed Decentralized Domain Name Service
 		\item Can define how to compute the regions to emulate almost any DHT topology.
 		\item Node responsibility:
 		\begin{itemize}
-			\item Node is  esponsible for its space, defined by its neighbors.
+			\item Node is responsible for its space, defined by its neighbors.
 			\item If a node leaves/fails, each neighbors assumes that it is responsible until corrected by maintenance. 
 		\end{itemize}
 	\end{itemize}
 	
-	Image of UrDHT here
+\begin{center}
+\includegraphics[width=0.5\linewidth]{figs/new_voronoi}
+\end{center}
 
 
 \end{frame}
@@ -277,6 +295,11 @@ Distributed Decentralized Domain Name Service
 
 
 
+\begin{frame}{Example Record}
+	
+\end{frame}
+
+
 
 \subsection{DNS Frontend}
 \begin{frame}{PowerDNS}
@@ -293,6 +316,7 @@ Distributed Decentralized Domain Name Service
 	Insert flowchart here or as own slide.
 	
 \end{frame}
+
 
 
 \subsection{Security}
@@ -357,10 +381,12 @@ Distributed Decentralized Domain Name Service
 \end{frame}
 
 
+
 \begin{frame}{Future Work}
 	\begin{itemize}
 		\item Optimize caching
 		\item Backup Comorbidity 
+		\item Further security measures
 	\end{itemize}
 \end{frame}
 
