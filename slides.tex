@@ -118,10 +118,8 @@ Distributed Decentralized Domain Name Service
 \begin{frame}{Components}
 
 	\begin{itemize}
-	
-		\item Overlay Topology (UrDHT).
 		\item Domain Name Blockchain. 
-		\item Distributed Hash Table.
+		\item Distributed Hash Table (UrDHT).
 		\item DNS server frontend (PowerDNS)
 	\end{itemize}
 \end{frame}
@@ -132,6 +130,16 @@ Distributed Decentralized Domain Name Service
 \item Use the DHT to load balance and distribute responsibility for hosting DNS and keys.  Can be any DHT, we're using UrDHT again.
 }
 
+
+
+\begin{frame}{Architecture }
+	\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{arch}
+\label{fig:arch}
+\end{figure}
+
+\end{frame}
 \section{Components}
 
 \subsection{DHTs}
@@ -271,6 +279,10 @@ Distributed Decentralized Domain Name Service
 \end{frame}
 
 \subsection{Security}
+
+
+
+
 
 \begin{frame}{Man in the Middle In a DHT}
 
