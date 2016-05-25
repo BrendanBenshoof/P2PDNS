@@ -57,7 +57,7 @@ Distributed Decentralized Domain Name Service
 	\begin{itemize}
 		\item Decentralization
 		\item Authentication
-		\item No end user modification
+		\item Backwards Compatible
 	\end{itemize}
 %	\item Requires distributed signing service for:
 %	\begin{itemize}
@@ -81,11 +81,13 @@ Distributed Decentralized Domain Name Service
 		\begin{itemize}
 			\item There is little cryptographic protection against the subpoena.
 			\item Poorly constructed laws targeting DNS.
+			\item %One sentence summary of SOPA PIPA
 		\end{itemize}	
 		\item  A distributed approach for authentication is much less vulnerable.
 	
 	\end{itemize}
 \end{frame}
+
 \note{Two interchangble parts 
 	the name ownership verification  (name coin variation)
 	Replication system VHash or UrDHT (Record progigation in DHT can only happen with authenication).
@@ -109,38 +111,66 @@ Distributed Decentralized Domain Name Service
 	
 	Incentive problem is moot.  
 	People will run it if you write it to do so, because people are lazy.
-	IPFS proof of providing - filecoin.
+	IPFS proof of providing/proof of retrievablily  - filecoin.
 	
 }
+
+
+\begin{frame}{Related Work}
+	Cox et al
+\end{frame}
+
+\subsection{Big Picture}
+
+\begin{frame}{Current DNS}
+	\begin{itemize}
+		\item ICANN is the final arbiter on who owns what domain
+		\item ICANN maintains and organizes the TLD authoritative name servers
+		\item Third party verifiers act to authenticate DNS records
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{P2P-Based DNS}
+	
+	\begin{itemize}
+		\item The shared block chain is the final arbiter of who owns what
+		\item The DHT organizes and maintains the authoritative TLD servers
+		\item The block chain acts to authenticate DNS records
+	\end{itemize}
+\end{frame}
+
+
+
+\section{Implementation}
 
 \subsection{How We Built It}
 
 \begin{frame}{Components}
-
+	
+	
 	\begin{itemize}
 		\item Domain Name Blockchain. 
 		\item Distributed Hash Table (UrDHT).
 		\item DNS server frontend (PowerDNS)
 	\end{itemize}
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{arch}
+		\label{fig:arch}
+	\end{figure}
+	
 \end{frame}
 
 
 \note[itemize]{
-\item Use a variant of NameCoin's blockchain to secure shared list of keys and domains.	
-\item Use the DHT to load balance and distribute responsibility for hosting DNS and keys.  Can be any DHT, we're using UrDHT again.
+	\item Use a variant of NameCoin's blockchain to secure shared list of keys and domains.	
+	\item Use the DHT to load balance and distribute responsibility for hosting DNS and keys.  Can be any DHT, we're using UrDHT again.
 }
 
 
 
-\begin{frame}{Architecture }
-	\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{arch}
-\label{fig:arch}
-\end{figure}
-
-\end{frame}
-\section{Components}
 
 \subsection{DHTs}
 %Cuttable
@@ -152,43 +182,51 @@ Distributed Decentralized Domain Name Service
 		\item  Facilitates one-to-one communication and one-to-many communication
 	\end{itemize}
 
+	Insert DHT Figure here
+
 \end{frame}
+%
+%\begin{frame}{UrDHT}
+%	\begin{itemize}
+%		\item Abstract DHT.
+%		\item Handles:
+%		\begin{itemize}
+%			\item Arbitrary topology.
+%			\item Plugin Services
+%		\end{itemize}
+%		\item Users can create or run clients to interact with the nodes.
+%		\item Subject of other research.
+%	\end{itemize}
+%	
+%\end{frame}
 
 \begin{frame}{UrDHT}
-	\begin{itemize}
-		\item Abstract DHT backend written in python.
-		\item Handles:
-		\begin{itemize}
-			\item Arbitrary DHT.
-			\item Plugin Services
-		\end{itemize}
-		\item Subject of other research
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{UrDHT Details}
 % Cuttable
 	\begin{itemize}
-		\item DHT organization mechanism.
 		\item Uses Voronoi regions on an $n$-dimensional torus to assign responsibility.
 		\item Can define how to compute the regions to emulate almost any DHT topology.
 		\item Node responsibility:
 		\begin{itemize}
-			\item Node is  responsible for its space, defined by its neighbors.
+			\item Node is  esponsible for its space, defined by its neighbors.
 			\item If a node leaves/fails, each neighbors assumes that it is responsible until corrected by maintenance. 
 		\end{itemize}
 	\end{itemize}
+	
+	Image of UrDHT here
 
 
 \end{frame}
 
 \begin{frame}{Fault Tolerance}
 	\begin{itemize}
-		\item Churn creates a period where i/o can fail.  With UrDHT:
-		\item Reads of backed up data are successful.
-		\item Writes to the region are successful. 
-		\item Reads of \textbf{new} data are vulnerable until it is backed up ($<2$ sec currently).
-		\item This means a much smaller window.  Writes never fail.\footnote{They may occur out of order}
+		\item Churn creates a period where i/o can fail.  
+		\item With UrDHT:
+		\begin{itemize}
+			\item Reads of backed up data are successful.
+			\item Writes to the region are successful. 
+			\item Reads of \textbf{new} data are vulnerable until it is backed up.
+			\item This means a much smaller window of vulnerability.  Writes never fail.%\footnote{They may occur out of order}
+		\end{itemize}
 	\end{itemize}
 
 \end{frame}
@@ -197,8 +235,8 @@ Distributed Decentralized Domain Name Service
 
 \begin{frame}{Cool Thing UrDHT Can Do}
 	\begin{itemize}
-		\item Embed problem spaces into DHT topology
-		\item Minimal latency based routing
+		\item Embed problem spaces into DHT topology.
+		\item Minimal latency based routing.
 		\item Basically turns routing into best-search first.
 		
 	\end{itemize}
@@ -226,126 +264,116 @@ Distributed Decentralized Domain Name Service
 		
 		\item These public keys can be used to verify stored DNS records by their signature records.
 	\end{itemize}
-\end{frame}
-
-
-
-\begin{frame}
+	
+	
 	\begin{figure}
-	\centering
-	\includegraphics[width=0.4\linewidth]{namecoin_block}
-	\caption{Contents of an individual block.}
-	\label{fig:blockchain}
+		\centering
+		\includegraphics[width=0.3\linewidth]{namecoin_block}
+		%\caption{Contents of an individual block.}
+		\label{fig:blockchain}
 	\end{figure}
-
+	
 \end{frame}
 
 
-\subsection{Frontend}
+
+
+\subsection{DNS Frontend}
 \begin{frame}{PowerDNS}
 \begin{itemize}
-	\item Well established authoritative DNS server software.
-	
+	\item Well established authoritative DNS server software.	
 	\item Provides easy interface for custom applications.
-	
+	\item Serves the DNS requests for DHT client.
 \end{itemize}
+
 \end{frame}
 
-\section{Summary}
-
-\subsection{Big Picture}
-
-\begin{frame}{Current DNS}
-
-	\begin{itemize}
-		\item ICANN is the final arbiter on who owns what domain
-		\item ICANN maintains and organizes the TLD authoritative name servers
-		\item Third party verifiers act to authenticate DNS records
+\begin{frame}{Flowchart}
 	
-	\end{itemize}
-
-
+	Insert flowchart here or as own slide.
+	
 \end{frame}
 
-
-
-\begin{frame}{P2P-Based DNS}
-
-	\begin{itemize}
-		\item The shared block chain is the final arbiter of who owns what
-		\item The DHT organizes and maintains the authoritative TLD servers
-		\item The block chain acts to authenticate DNS records
-	\end{itemize}
-\end{frame}
 
 \subsection{Security}
 
-
-
-
-
 \begin{frame}{Man in the Middle In a DHT}
-
+	
 	\begin{itemize}
 		\item Need to have a distributed, reliable way to authenticate 
 		\item  Given: an existing network where nodes have exchanged keys securely
 		\item  Given: a new peer who wishes to join the network and share their public key
-	
+		
 	\end{itemize}
-
-
+	
+	
 \end{frame}
 
 
 
 \begin{frame}{Prevention}
-
+	
 	\begin{itemize}
 		\item  At least 2 members of the network interrogate the new peer for its public key
 		\item  Those interrogators compare their results
 		\item  If those results match:
 		\begin{itemize}
-		
-		    \item The new peer creates an authentication record
-		    \item The interrogators sign that record
-		    \item The new record is distributed across the network
+			
+			\item The new peer creates an authentication record
+			\item The interrogators sign that record
+			\item The new record is distributed across the network
 		\end{itemize}
 		
 		
 		\item  If the results do not match
 		\begin{itemize}
-		
-		    \item An attack is detected and reported to the new peer by all authenticating servers.
-		    \item A member of the network may make a ban of the compromised peer
-		    \item Otherwise the joining process can be repeated.
+			
+			\item An attack is detected and reported to the new peer by all authenticating servers.
+			\item A member of the network may make a ban of the compromised peer
+			\item Otherwise the joining process can be repeated.
 		\end{itemize}
 		
 	\end{itemize}
-
-
+	
+	
 \end{frame}
+
+
+
+\section{Conclusion}
+
 
 
 \subsection{Conclusion}
 \begin{frame}{Conclusions}
 	\begin{itemize}
-		\item Proof of concept of a decentralized and distributed top-level DNS.
-		\item Fully reverse compatible.
-		\item Offers greater security.
-		\item Any organization can create their own secure verification server.
+		\item Deployable prototype of a decentralized and distributed top-level DNS
+		\item Stronger robustness
+		\item Fully reverse compatible
+		\item Offers greater security
+		\item Any organization can create their own secure verification server
 		
 	\end{itemize}
 \end{frame}
 
 
-
-\section*{Appendix}
-\begin{frame}{How Does This Differ From Namecoin?}
+\begin{frame}{Future Work}
 	\begin{itemize}
-		\item Transparent to end users.
-		\item Namecoin doesn't scale efficiently, our system.
+		\item Optimize caching
+		\item Backup Comorbidity 
 	\end{itemize}
 \end{frame}
+
+
+
+%
+%\section*{Appendix}
+%\begin{frame}{How Does This Differ From Namecoin?}
+%	\begin{itemize}
+%		\item Transparent to end users.
+%		\item Namecoin doesn't scale efficiently, our system.
+%	\end{itemize}
+%\end{frame}
 
 
 \end{document}
