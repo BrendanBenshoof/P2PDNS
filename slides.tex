@@ -52,7 +52,7 @@ Brendan Benshoof \qquad Andrew Rosen \\ \qquad Anu G. Bourgeois \qquad Robert W.
 Distributed Decentralized Domain Name Service
 
 \begin{itemize}
-	\item The goal is to create a secure distributed DNS 
+	\item The goal is to create a secure, distributed DNS 
 	\item Requirements:
 	\begin{itemize}
 		\item Decentralization
@@ -123,6 +123,7 @@ Distributed Decentralized Domain Name Service
 \begin{frame}{Related Work}
 	Cox \textit{et al.}\footnote{Cox \textit{et al.}, ``Serving DNS using a Peer-to-Peer Lookup Service'' in \textit{Peer-to-Peer Systems}, pp. 155-165, Springer, 2002 } developed DDNS:
 	\begin{itemize}
+		\item Motivated by problem of expertise
 		\item Fault tolerant, load-balancing, and scalable
 		\item Easier to administer
 		\item Found higher latencies in a P2P-based DNS
@@ -136,16 +137,19 @@ Distributed Decentralized Domain Name Service
 	\begin{itemize}
 		\item ICANN is the final arbiter on who owns what domain
 		\item ICANN maintains and organizes the TLD authoritative name servers
-		\item Third party verifiers act to authenticate DNS records
+		\item Third party verifiers act to authenticate DNS records 
 	\end{itemize}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.6\linewidth]{figs/dns}
-\caption{DNS operation. Source: ICANN}
+%\caption{DNS operation. Source: ICANN}
 \label{fig:dns}
 \end{figure}
-
+\begin{center}
+\footnotesize{Source: ICANN}
+	
+\end{center}
 
 \end{frame}
 
@@ -243,7 +247,7 @@ Distributed Decentralized Domain Name Service
 
 \begin{frame}{Fault Tolerance}
 	\begin{itemize}
-		\item Churn creates a period where i/o can fail.  
+		\item Churn creates a period where I/O can fail.  
 		\item With UrDHT:
 		\begin{itemize}
 			\item Reads of backed up data are successful.
@@ -257,11 +261,11 @@ Distributed Decentralized Domain Name Service
 
 \note{Reads of NEW data are vulnerable until they are backed up in the network.}
 
-\begin{frame}{Cool Thing UrDHT Can Do}
+\begin{frame}{Cool Things UrDHT Can Do}
 	\begin{itemize}
-		\item Embed problem spaces into DHT topology.
-		\item Minimal latency based routing.
-		\item Basically turns routing into best-search first.
+		\item Embed problem spaces into DHT topology
+		\item Minimal latency based routing
+		\item Basically turns routing into best-search first
 		
 	\end{itemize}
 \end{frame}
@@ -282,11 +286,11 @@ Distributed Decentralized Domain Name Service
 
 \begin{frame}{DNS Blockchain}
 	\begin{itemize}
-		\item Using a technique similar to bitcoin, we can assign domain names as reward for mining new blocks and transfer domains between owners.
+		\item Using a technique similar to Bitcoin, we can assign domain names as reward for mining new blocks and transfer domains between owners
 		
 		\item An `owner' in this context is a public key
 		
-		\item These public keys can be used to verify stored DNS records by their signature records.
+		\item These public keys can be used to verify stored DNS records by their signature records
 	\end{itemize}
 	
 	
@@ -318,11 +322,13 @@ Distributed Decentralized Domain Name Service
 	\item Serves the DNS requests for DHT client.
 \end{itemize}
 
-\end{frame}
+	\begin{center}
+		\includegraphics[width=\linewidth]{"figs/D3NS Flowchart"}
+	\end{center}
 
-\begin{frame}{Flowchart}
+
 	
-	Insert flowchart here or as own slide.
+
 	
 \end{frame}
 
@@ -334,9 +340,12 @@ Distributed Decentralized Domain Name Service
 	
 	\begin{itemize}
 		\item Need to have a distributed, reliable way to authenticate 
-		\item  Given: an existing network where nodes have exchanged keys securely
-		\item  Given: a new peer who wishes to join the network and share their public key
-		
+		\item Given:
+		\begin{itemize}
+			\item An existing network where nodes have exchanged keys securely
+			\item A new peer who wishes to join the network and share their public key
+			
+		\end{itemize}
 	\end{itemize}
 	
 	
@@ -358,7 +367,7 @@ Distributed Decentralized Domain Name Service
 		\end{itemize}
 		
 		
-		\item  If the results do not match
+		\item  If the results do not match:
 		\begin{itemize}
 			
 			\item An attack is detected and reported to the new peer by all authenticating servers.
