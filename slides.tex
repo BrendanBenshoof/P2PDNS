@@ -86,7 +86,32 @@ Distributed Decentralized Domain Name Service
 	
 	\end{itemize}
 \end{frame}
-
+\note{Two interchangble parts 
+	the name ownership verification  (name coin variation)
+	Replication system VHash or UrDHT (Record progigation in DHT can only happen with authenication).
+	Current system caches whatevers
+	Robustess -- Regenerating k replicas 
+	
+	Two philsophical departure.
+	Security is baked in at the replication layer.
+	Decentralization 
+	
+	iF we could rewrite DNS from start.
+	
+	
+	Code we wrote falls back (temporary).
+	Prototype worked for .TLD
+	8.8.8.8
+	
+	Ideal use case
+	If I want to securely run an instance of this, I run a DHT client that provides a local dns server
+	Check authentication.
+	
+	Incentive problem is moot.  
+	People will run it if you write it to do so, because people are lazy.
+	IPFS proof of providing - filecoin.
+	
+}
 
 \subsection{How We Built It}
 
@@ -194,7 +219,6 @@ Distributed Decentralized Domain Name Service
 		\item These public keys can be used to verify stored DNS records by their signature records.
 	\end{itemize}
 \end{frame}
-
 
 
 
@@ -307,6 +331,7 @@ Distributed Decentralized Domain Name Service
 \begin{frame}{How Does This Differ From Namecoin?}
 	\begin{itemize}
 		\item Transparent to end users.
+		\item Namecoin doesn't scale efficiently, our system.
 	\end{itemize}
 \end{frame}
 
