@@ -48,32 +48,30 @@ Brendan Benshoof \qquad Andrew Rosen \\ \qquad Anu G. Bourgeois \qquad Robert W.
 \section{Introduction}
 \subsection{Motivation}
 
-\begin{frame}{What is D$^3$NS}
-Distributed Decentralized Domain Name Service
-
-\begin{itemize}
-	\item The goal is to create a secure, distributed DNS 
-	\item Requirements:
+\begin{frame}{Current DNS}
 	\begin{itemize}
-		\item Decentralization
-		\item Authentication
-		\item Backwards Compatible
+		\item ICANN is the final arbiter on who owns what domain
+		\item ICANN maintains and organizes the TLD authoritative name servers
+		\item Third party verifiers act to authenticate DNS records 
 	\end{itemize}
-%	\item Requires distributed signing service for:
-%	\begin{itemize}
-%		\item Authentication
-%		\item Thwarting man-in-the-middle attacks
-%	\end{itemize}
-\end{itemize}
-
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.6\linewidth]{figs/dns}
+		%\caption{DNS operation. Source: ICANN}
+		\label{fig:dns}
+	\end{figure}
+	\begin{center}
+		\footnotesize{Source: ICANN}
+		
+	\end{center}
+	
 \end{frame}
 
 
-\note[itemize]{
-\item Authenticate records in a distributed system
-\item Backwards compatable with the current system
-\item Transparent to the user
-}
+
+
+
 
 \begin{frame}{Motivation}
 	\begin{itemize}
@@ -132,26 +130,36 @@ Distributed Decentralized Domain Name Service
 \end{frame}
 
 \subsection{Big Picture}
-
-\begin{frame}{Current DNS}
+\begin{frame}{What is D$^3$NS}
+	Distributed Decentralized Domain Name Service	
 	\begin{itemize}
-		\item ICANN is the final arbiter on who owns what domain
-		\item ICANN maintains and organizes the TLD authoritative name servers
-		\item Third party verifiers act to authenticate DNS records 
+		\item Our Goals:
+		\begin{itemize}
+			
+			\item Decentralized authentication
+			
+			\item Low latency
+			\item Incentive to participate
+			
+			\item Backwards compatible
+			\item Transparent to the user
+		\end{itemize}
+		%	\item Requires distributed signing service for:
+		%	\begin{itemize}
+		%		\item Authentication
+		%		\item Thwarting man-in-the-middle attacks
+		%	\end{itemize}
 	\end{itemize}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.6\linewidth]{figs/dns}
-%\caption{DNS operation. Source: ICANN}
-\label{fig:dns}
-\end{figure}
-\begin{center}
-\footnotesize{Source: ICANN}
 	
-\end{center}
-
 \end{frame}
+
+
+\note[itemize]{
+	\item Authenticate records in a distributed system, verisign holds all of the .com
+	\item Backwards compatable with the current system
+}
+
+
 
 
 \begin{frame}{P2P-Based DNS}
@@ -173,8 +181,8 @@ Distributed Decentralized Domain Name Service
 	
 	
 	\begin{itemize}
-		\item Domain Name Blockchain. 
-		\item Distributed Hash Table (UrDHT).
+		\item Domain Name Blockchain 
+		\item Distributed Hash Table (UrDHT)
 		\item DNS server frontend (PowerDNS)
 	\end{itemize}
 	
@@ -229,12 +237,12 @@ Distributed Decentralized Domain Name Service
 \begin{frame}{UrDHT}
 % Cuttable
 	\begin{itemize}
-		\item Uses Voronoi regions on an $n$-dimensional torus to assign responsibility.
-		\item Can define how to compute the regions to emulate almost any DHT topology.
+		\item Uses Voronoi regions on an $n$-dimensional torus to assign responsibility
+		\item Can define how to compute the regions to emulate almost any DHT topology
 		\item Node responsibility:
 		\begin{itemize}
-			\item Node is responsible for its space, defined by its neighbors.
-			\item If a node leaves/fails, each neighbors assumes that it is responsible until corrected by maintenance. 
+			\item Node is responsible for its space, defined by its neighbors
+			\item If a node leaves/fails, each neighbors assumes that it is responsible until corrected by maintenance 
 		\end{itemize}
 	\end{itemize}
 	
@@ -247,12 +255,12 @@ Distributed Decentralized Domain Name Service
 
 \begin{frame}{Fault Tolerance}
 	\begin{itemize}
-		\item Churn creates a period where I/O can fail.  
+		\item Churn creates a period where I/O can fail
 		\item With UrDHT:
 		\begin{itemize}
-			\item Reads of backed up data are successful.
-			\item Writes to the region are successful. 
-			\item Reads of \textbf{new} data are vulnerable until it is backed up.
+			\item Reads of backed up data are successful
+			\item Writes to the region are successful
+			\item Reads of \textbf{new} data are vulnerable until it is backed up
 			\item This means a much smaller window of vulnerability.  Writes never fail.%\footnote{They may occur out of order}
 		\end{itemize}
 	\end{itemize}
@@ -307,7 +315,7 @@ Distributed Decentralized Domain Name Service
 
 \begin{frame}{Example Record}
 	\begin{center}
-\includegraphics[width=0.7\linewidth]{figs/record}
+\includegraphics[width=\linewidth]{figs/record}
 \end{center}
 
 \end{frame}
@@ -333,53 +341,87 @@ Distributed Decentralized Domain Name Service
 \end{frame}
 
 
+\subsection{Operation}
+
+
+
+\begin{frame}{DNS Registration}
+	\begin{itemize}
+		\item New domain names can be:
+		\begin{itemize}
+			\item Awarded as part of mining process
+			\item Bought as a voucher
+		\end{itemize}
+		\item Domain names can be transferred between owners by creating a new record
+		\item These transactions are recorded in the blockchain
+	\end{itemize}	
+\end{frame}
 
 \subsection{Security}
 
-\begin{frame}{Man in the Middle In a DHT}
-	
+\begin{frame}{Ramifications}
+
+\begin{itemize}
+	\item More resilient against DDOS attacks
 	\begin{itemize}
-		\item Need to have a distributed, reliable way to authenticate 
-		\item Given:
-		\begin{itemize}
-			\item An existing network where nodes have exchanged keys securely
-			\item A new peer who wishes to join the network and share their public key
-			
-		\end{itemize}
+		\item No top of hierarchy to attack
+		\item Attacker needs to target large number of servers
 	\end{itemize}
+	\item Decentralization of authentication
+	\begin{itemize}
+		\item Authentication is baked into replication
+		\item Changes to a record must be signed by the owner
+	\end{itemize}
+\end{itemize}	
 	
 	
 \end{frame}
 
 
-
-\begin{frame}{Prevention}
-	
-	\begin{itemize}
-		\item  At least 2 members of the network interrogate the new peer for its public key
-		\item  Those interrogators compare their results
-		\item  If those results match:
-		\begin{itemize}
-			
-			\item The new peer creates an authentication record
-			\item The interrogators sign that record
-			\item The new record is distributed across the network
-		\end{itemize}
-		
-		
-		\item  If the results do not match:
-		\begin{itemize}
-			
-			\item An attack is detected and reported to the new peer by all authenticating servers.
-			\item A member of the network may make a ban of the compromised peer
-			\item Otherwise the joining process can be repeated.
-		\end{itemize}
-		
-	\end{itemize}
-	
-	
-\end{frame}
-
+%\begin{frame}{Man in the Middle In a DHT}
+%	
+%	\begin{itemize}
+%		\item Need to have a distributed, reliable way to authenticate 
+%		\item Given:
+%		\begin{itemize}
+%			\item An existing network where nodes have exchanged keys securely
+%			\item A new peer who wishes to join the network and share their public key
+%			
+%		\end{itemize}
+%	\end{itemize}
+%	
+%	
+%\end{frame}
+%
+%
+%
+%\begin{frame}{Prevention}
+%	
+%	\begin{itemize}
+%		\item  At least 2 members of the network interrogate the new peer for its public key
+%		\item  Those interrogators compare their results
+%		\item  If those results match:
+%		\begin{itemize}
+%			
+%			\item The new peer creates an authentication record
+%			\item The interrogators sign that record
+%			\item The new record is distributed across the network
+%		\end{itemize}
+%		
+%		
+%		\item  If the results do not match:
+%		\begin{itemize}
+%			
+%			\item An attack is detected and reported to the new peer by all authenticating servers.
+%			\item A member of the network may make a ban of the compromised peer
+%			\item Otherwise the joining process can be repeated.
+%		\end{itemize}
+%		
+%	\end{itemize}
+%	
+%	
+%\end{frame}
+%
 
 
 \section{Conclusion}
@@ -392,7 +434,8 @@ Distributed Decentralized Domain Name Service
 		\item Deployable prototype of a decentralized and distributed top-level DNS
 		\item Stronger robustness
 		\item Fully reverse compatible
-		\item Offers greater security
+		\item Offers decentralized authentication
+		\item Improvements to latency
 		\item Any organization can create their own secure verification server
 		
 	\end{itemize}
@@ -403,8 +446,9 @@ Distributed Decentralized Domain Name Service
 \begin{frame}{Future Work}
 	\begin{itemize}
 		\item Optimize caching
-		\item Backup Comorbidity 
+		\item Handle backup comorbidity 
 		\item Further security measures
+		\item Larger scale implementation 
 	\end{itemize}
 \end{frame}
 
